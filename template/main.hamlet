@@ -1,0 +1,6 @@
+<div #header>
+    <h1>Aptly Sustain
+<div #content>
+    ^{widget}
+    <div #footer>
+        <p>© 2014 Platbox
