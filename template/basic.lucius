@@ -1,13 +1,12 @@
 @head_color: #D44A98;
-@text_color: #505060;
-@h_color: #303040;
+@header_color: #101020;
 @line_color: #B0B0C0;
 @light_tint: #F0F0FF;
 @content_width: 800px;
 
 body {
+    font-size: 16px;
     font-family: sans-serif;
-    color: #{text_color};
 }
 
 #header {
@@ -34,7 +33,7 @@ body {
     margin: 2em 0 1em;
     padding: 0.5em;
     border-bottom: 1px solid #{line_color};
-    color: #{h_color};
+    color: #{header_color};
 }
 
 #content ul {
@@ -42,16 +41,31 @@ body {
     margin: 0.5em;
     li {
         display: block;
-        /*background-color: #{light_tint};*/
         padding: 0.25em;
         span {
             display: inline-block;
+            vertical-align: baseline;
         }
         span.name {
+            margin-left: 0.5em;
             width: 40%;
         }
         span.version {
             width: 40%;
+        }
+        div.btn {
+            visibility: hidden;
+            padding: 4px 6px;
+            span {
+                top: 3px;
+                font-size: 16px;
+            }
+        }
+    }
+    li:hover {
+        background-color: #{light_tint};
+        div.btn {
+            visibility: visible;
         }
     }
 }

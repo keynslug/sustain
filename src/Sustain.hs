@@ -1,28 +1,20 @@
 --
 -- Main
 
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 import Imports
-import Prelude (uncurry, (.), (==))
+import Prelude (uncurry)
+import Foundation
 import qualified Layout
 import qualified Package
 import qualified Aptly
 
-import Control.Monad (mapM_)
-import Data.Maybe (mapMaybe)
 import Data.List (sort, groupBy)
-import Data.Functor (fmap)
-import Data.Function (on)
 
 --
 
-data Sustain = Sustain
-
-mkYesod "Sustain" [parseRoutes|
-    / HomeR GET
-|]
-
-instance Yesod Sustain where
-    defaultLayout = Layout.defaultLayout
+mkYesodDispatch "Sustain" resourcesSustain
 
 --
 
@@ -64,4 +56,6 @@ getHomeR = defaultLayout $ do
 --
 
 main :: IO ()
-main = warp 3000 Sustain
+main = do
+    app <- makeFoundation
+    warp 3000 app

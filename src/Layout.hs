@@ -3,31 +3,23 @@
 module Layout where
 
 import Imports
+import Foundation
 import Package
 
---
-
-type Widget site = WidgetT site IO ()
-type Widgeter site = Widget site -> Widget site
-
-defaultLayout :: (Yesod site) => Widget site -> HandlerT site IO Html
-defaultLayout contents = do
-    pc <- widgetToPageContent $ do
-        toWidget $(luciusFile "template/normalise.lucius")
-        toWidget $(luciusFile "template/basic.lucius")
-        contents
-    giveUrlRenderer $(hamletFile "template/layout.hamlet")
-
-withContent :: (Yesod site) => Widgeter site
+withContent :: Widget -> Widget
 withContent widget = $(whamletFile "template/main.hamlet")
 
-packageList :: (Yesod site) => Text -> PackageList -> Widget site
+packageList :: Text -> PackageList -> Widget
 packageList caption ps = [whamlet|
     <h3>#{caption}
     <ul>
         $forall p <- ps
             <li id=#{fullName p}>
-                <span class=name>#{name p}
-                <span class=version>#{version p}
-                <span class=platform>#{platform p}
+                <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" title="Stabilize">
+                    <span ."glyphicon glyphicon-upload">
+                <div ."btn btn-tooltip btn-danger" data-toggle="tooltip" data-placement="bottom" title="Remove">
+                    <span ."glyphicon glyphicon-remove-circle">
+                <span .name>#{name p}
+                <span .version>#{version p}
+                <span .platform>#{platform p}
 |]
