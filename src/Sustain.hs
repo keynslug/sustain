@@ -4,13 +4,10 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 import Imports
-import Prelude (uncurry)
 import Foundation
 import qualified Layout
 import qualified Package
 import qualified Aptly
-
-import Data.List (sort, groupBy)
 
 --
 
@@ -47,11 +44,8 @@ pkgs = [
 
 getHomeR :: Handler Html
 getHomeR = defaultLayout $ do
-    let packages = sort $ mapMaybe Package.fromFullName pkgs
-    Layout.withContent $
-        mapM_ (uncurry Layout.packageList . tagWithName) $
-            groupBy ((==) `on` Package.name) packages where
-                tagWithName ps @ (p : _) = (Package.name p, ps)
+    let packages = mapMaybe Package.fromFullName pkgs
+    Layout.withContent $ Layout.packageList packages
 
 --
 

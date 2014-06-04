@@ -3,8 +3,9 @@
 
 module Imports (module Import) where
 
-import Prelude as Import (flip, (.), ($), (==), (/=))
+import Prelude as Import (flip, (.), ($), (==), (/=), curry, uncurry)
 
+import Data.List as Import (length, map, head, zip, sort, groupBy)
 import Data.Functor as Import (fmap, (<$>))
 import Data.Maybe as Import (mapMaybe)
 import Data.Function as Import (on)

@@ -1,3 +1,11 @@
 jQuery(function () {
-    $('li div.btn').tooltip();
+    $('.pkglist li div.btn').tooltip();
+    $('.navsidebar').affix({
+        offset: {
+            top: function () {
+                var el = $('#header')
+                return (this.top = el.outerHeight() * 2)
+            }
+        }
+    });
 });
