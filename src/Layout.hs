@@ -12,7 +12,8 @@ withContent widget = [whamlet|
         <h1>Aptly Sustain
     <div #content>
         ^{widget}
-        <div #footer .clearfix>
+        <div .clearfix>
+        <div #footer>
             <p>© 2014 Platbox
 |]
 
@@ -23,11 +24,12 @@ packageList ps = do
     [whamlet|
         <div .c1>
             <div .navsidebar>
-                $forall (caption, ps) <- grouped
-                    <a href="##{caption}">
-                        <div .group>
-                            <i .caption>#{caption}
-                            <i .number>#{length ps}
+                <div .wrapper>
+                    $forall (caption, ps) <- grouped
+                        <a href="##{caption}">
+                            <div .group>
+                                #{caption}
+                                <i .number>#{length ps}
                 <div .clearfix>
         <div .c2>
             <div .pkglist>
@@ -41,9 +43,9 @@ packageSection caption ps =
         <ul>
             $forall p <- ps
                 <li id=#{fullName p}>
-                    <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" title="Stabilize">
+                    <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" data-do="stabilize" title="Stabilize">
                         <span ."glyphicon glyphicon-chevron-up">
-                    <div ."btn btn-tooltip btn-danger" data-toggle="tooltip" data-placement="bottom" title="Remove">
+                    <div ."btn btn-tooltip btn-danger" data-toggle="tooltip" data-placement="bottom" data-do="remove" title="Remove">
                         <span ."glyphicon glyphicon-remove">
                     <span .name>#{name p}
                     <span .version>#{version p}
