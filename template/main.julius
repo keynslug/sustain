@@ -1,11 +1,26 @@
 jQuery(function () {
+
+    // Activate tooltips
     $('.pkglist li div.btn').tooltip();
+
+    // Activate affix behaviour
     $('.navsidebar').affix({
         offset: {
             top: function () {
-                var el = $('#header')
-                return (this.top = el.outerHeight() * 2)
+                var el = $('#header');
+                return (this.top = el.outerHeight() * 2);
             }
         }
     });
+
+    // Bind actions to buttons
+    $('.pkglist li').each(function () {
+        var pname = this.id;
+        $('div.btn', this).each(function () {
+            $(this).click(function () {
+                alert($(this).data("do") + " " + pname);
+            });
+        });
+    });
+
 });
