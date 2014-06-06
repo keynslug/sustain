@@ -47,6 +47,13 @@ getHomeR = defaultLayout $ do
     let packages = mapMaybe Package.fromFullName pkgs
     Layout.withContent $ Layout.packageList packages
 
+postStabilizeR :: Handler Value
+postStabilizeR = returnJson $
+    object [ "answer" .= (42 :: Int) ]
+
+postRemoveR :: Handler Value
+postRemoveR = invalidArgs []
+
 --
 
 main :: IO ()

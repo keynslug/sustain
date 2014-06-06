@@ -14,18 +14,42 @@ body {
 }
 
 #header {
+    position: relative;
     background-color: #{head_color};
-    margin-bottom: 1em;
-}
-
-#header h1 {
-    display: block;
     color: white;
-    font-size: 1.6em;
-    font-weight: normal;
-    margin: auto;
-    padding: 0.4em 0;
-    width: #{content_width};
+    h1 {
+        display: block;
+        font-size: 1.6em;
+        font-weight: normal;
+        margin: auto;
+        padding: 0.4em 0;
+        width: #{content_width};
+    }
+    #statusbar {
+        width: 100%;
+        padding: 0.25em;
+        padding-left: 20%;
+        box-shadow: inset 0 0.25em 0.4em rgba(0, 0, 0, 0.2);
+        p {
+            font-size: 0.8em;
+            margin: 0;
+        }
+    }
+    #statusbar.affix-top {
+        position: absolute;
+        top: 100%;
+    }
+    #statusbar.affix {
+        position: fixed;
+        z-index: 1;
+        top: 0;
+    }
+    #statusbar.ok {
+        background-color: #3AC448;
+    }
+    #statusbar.failure {
+        background-color: #D43A4A;
+    }
 }
 
 #content {

@@ -11,7 +11,9 @@ data Sustain = Sustain { getStatic :: Static }
 
 mkYesodData "Sustain" [parseRoutes|
     /static StaticR Static getStatic
-    / HomeR GET
+    /                HomeR        GET
+    /api/stabilize   StabilizeR   POST
+    /api/remove      RemoveR      POST
 |]
 
 instance Yesod Sustain where
@@ -27,7 +29,7 @@ instance Yesod Sustain where
         giveUrlRenderer $(hamletFile "template/layout.hamlet")
 
     addStaticContent =
-        addStaticContentExternal minifym genFileName staticDir (StaticR . flip StaticRoute []) where
+        addStaticContentExternal (Right . id) genFileName staticDir (StaticR . flip StaticRoute []) where
             genFileName = base64md5
 
 staticDir :: FilePath

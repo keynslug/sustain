@@ -4,21 +4,53 @@ jQuery(function () {
     $('.pkglist li div.btn').tooltip();
 
     // Activate affix behaviour
-    $('.navsidebar').affix({
+    $('#statusbar').affix({
         offset: {
             top: function () {
-                var el = $('#header');
-                return (this.top = el.outerHeight() * 2);
+                return (this.top = $('#header').innerHeight());
             }
         }
     });
+
+    $('.navsidebar').affix({
+        offset: {
+            top: function () {
+                return (this.top = $('#header').outerHeight() + $('.pkglist h3:first-child').innerHeight() - 8);
+            }
+        }
+    });
+
+    var emitStatus = function (cls, text, timeout) {
+        var el = $('#statusbar');
+        el.removeClass('ok failure').addClass(cls).fadeIn();
+        $('p', el).text(text);
+        setTimeout(function () {
+            el.fadeOut();
+        }, timeout || 5000);
+    };
+
+    var withPackage = function (name, action) {
+        $.ajax("/api/" + action, {
+            type: "POST",
+            data: JSON.stringify({package_name: name}),
+            contentType: "application/json",
+            dataType: "json"
+        })
+            .done(function () {
+                emitStatus('ok', "Everything went purely. Don't forget to sync, buddy!");
+            })
+            .fail(function () {
+                emitStatus('failure', "Everything went badly :(");
+            });
+    };
 
     // Bind actions to buttons
     $('.pkglist li').each(function () {
         var pname = this.id;
         $('div.btn', this).each(function () {
             $(this).click(function () {
-                alert($(this).data("do") + " " + pname);
+                var action = $(this).data("do");
+                withPackage(pname, action);
             });
         });
     });

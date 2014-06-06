@@ -10,6 +10,8 @@ withContent :: Widget -> Widget
 withContent widget = [whamlet|
     <div #header>
         <h1>Aptly Sustain
+        <div #statusbar .affix-top .ok>
+            <p>TEST TEXT please ignore
     <div #content>
         ^{widget}
         <div .clearfix>
@@ -23,7 +25,7 @@ packageList ps = do
     let grouped = zip (map (name . head) packages) packages
     [whamlet|
         <div .c1>
-            <div .navsidebar>
+            <div .navsidebar .affix-top>
                 <div .wrapper>
                     $forall (caption, ps) <- grouped
                         <a href="##{caption}">
