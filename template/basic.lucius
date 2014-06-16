@@ -25,31 +25,34 @@ body {
         padding: 0.4em 0;
         width: #{content_width};
     }
-    #statusbar {
-        width: 100%;
-        padding: 0.25em;
-        padding-left: 20%;
-        box-shadow: inset 0 0.25em 0.4em rgba(0, 0, 0, 0.2);
-        p {
-            font-size: 0.8em;
-            margin: 0;
-        }
+}
+
+#statusbar {
+    width: 100%;
+    padding: 0 0.25em 0.25em 20%;
+    border-top: 0.25em solid black;
+    position: absolute;
+    z-index: 1;
+    color: white;
+    .close {
+        padding: 0.2em;
+        float: right;
     }
-    #statusbar.affix-top {
-        position: absolute;
-        top: 100%;
-    }
-    #statusbar.affix {
-        position: fixed;
-        z-index: 1;
-        top: 0;
-    }
-    #statusbar.ok {
-        background-color: #3AC448;
-    }
-    #statusbar.failure {
-        background-color: #D43A4A;
-    }
+}
+
+#statusbar.affix {
+    position: fixed;
+    top: 0;
+}
+
+#statusbar.ok {
+    border-color: #1AA428;
+    background-color: #3AC448;
+}
+
+#statusbar.failure {
+    border-color: #B42A3A;
+    background-color: #D43A4A;
 }
 
 #content {

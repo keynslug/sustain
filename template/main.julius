@@ -7,7 +7,7 @@ jQuery(function () {
     $('#statusbar').affix({
         offset: {
             top: function () {
-                return (this.top = $('#header').innerHeight());
+                return (this.top = $('#header h1').outerHeight(true));
             }
         }
     });
@@ -20,13 +20,15 @@ jQuery(function () {
         }
     });
 
-    var emitStatus = function (cls, text, timeout) {
+    $('#statusbar .close').click(function () {
+        $('#statusbar').fadeOut(200);
+    });
+
+    var emitStatus = function (cls, html) {
         var el = $('#statusbar');
-        el.removeClass('ok failure').addClass(cls).fadeIn();
-        $('p', el).text(text);
-        setTimeout(function () {
-            el.fadeOut();
-        }, timeout || 5000);
+        el.removeClass('ok failure').addClass(cls).fadeIn(200);
+        el.data('bs.affix').checkPosition();
+        $('.text', el).html(html);
     };
 
     var withPackage = function (name, action) {
@@ -37,10 +39,10 @@ jQuery(function () {
             dataType: "json"
         })
             .done(function () {
-                emitStatus('ok', "Everything went purely. Don't forget to sync, buddy!");
+                emitStatus('ok', 'Everything went purely. Want to sync, buddy? <a href="/">Sure</a>');
             })
             .fail(function () {
-                emitStatus('failure', "Everything went badly :(");
+                emitStatus('failure', 'Everything went badly :(');
             });
     };
 

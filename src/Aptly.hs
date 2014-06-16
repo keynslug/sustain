@@ -38,10 +38,9 @@ data Result =
 aptly :: Action -> IO Result
 aptly action = do
     let args = constructArgs action
-    result <- readProcessWithExitCode aptlyExecutable (repoCommand : args) mempty
+    result <- readProcessWithExitCode aptlyExecutable args mempty
     return $ fromResult result where
         aptlyExecutable = "echo"
-        repoCommand = "repo"
         fromResult (ExitFailure code, _, errorString) = fromError code errorString
         fromResult (ExitSuccess, stdout, _) = parseResult stdout
 
@@ -54,9 +53,9 @@ aptlyList section = do
 
 constructArgs :: Action -> [String]
 constructArgs = construct' where
-    construct' (List section) = ["show", showSection section, "-with-packages"]
-    construct' (Copy secFrom secTo p) = ["copy", showSection secFrom, showSection secTo, packageName p]
-    construct' (Remove section p) = ["remove", showSection section, packageName p]
+    construct' (List section) = ["repo", "show", "-with-packages", showSection section]
+    construct' (Copy secFrom secTo p) = ["repo", "copy", showSection secFrom, showSection secTo, packageName p]
+    construct' (Remove section p) = ["repo", "remove", showSection section, packageName p]
     packageName = quote . unpack . fullName
     quote s = concat ["\"", s, "\""]
     showSection = map toLower . show

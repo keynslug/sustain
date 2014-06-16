@@ -10,8 +10,9 @@ withContent :: Widget -> Widget
 withContent widget = [whamlet|
     <div #header>
         <h1>Aptly Sustain
-        <div #statusbar .affix-top .ok>
-            <p>TEST TEXT please ignore
+    <div #statusbar .affix-top .ok>
+        <span .text>TEST TEXT please ignore
+        <span ."close glyphicon glyphicon-remove">
     <div #content>
         ^{widget}
         <div .clearfix>
