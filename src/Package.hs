@@ -1,11 +1,14 @@
+--
 -- Package
 
 module Package (
     Package,
     PackageList,
+    Section(..),
     Version,
     Platform,
-    fromFullName,
+    fromSectionFullName,
+    section,
     fullName,
     name,
     version,
@@ -19,10 +22,14 @@ import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
 
+data Section = Testing | Stable
+    deriving (Show, Enum, Eq, Ord)
+
 type Version = Text
 type Platform = Text
 
 data Package = Package {
+    section :: Section,
     fullName :: Text,
     name :: Text,
     version :: Version,
@@ -32,15 +39,16 @@ data Package = Package {
 instance Ord Package where
     compare p1 p2 =
         comparing name p1 p2 <>
+        comparing section p1 p2 <>
         (compareVersion `on` version) p1 p2 <>
-        comparing platform p1 p2 
+        comparing platform p1 p2
 
 type PackageList = [Package]
 
-fromFullName :: Text -> Maybe Package
-fromFullName s =
+fromSectionFullName :: Section -> Text -> Maybe Package
+fromSectionFullName sec s =
     case Text.split (== '_') s of
-        [n, v, p] -> Just $ Package s n v p
+        [n, v, p] -> Just $ Package sec s n v p
         _ -> Nothing
 
 compareVersion :: Version -> Version -> Ordering
@@ -58,16 +66,10 @@ dissect subject = (epoch : parts, leftover) where
             else (parts' $ safeInit p, parts' r)
     parts' s = take maxParts $ Text.split (flip elem $ delimeters) s ++ partsTail
     partsTail = repeat Text.empty
+    safeInit = safeOn Text.init
+    safeTail = safeOn Text.tail
     delimeters = ".+-:~"
     maxParts = 8
-
---
-
-safeInit :: Text -> Text
-safeInit = safeOn Text.init
-
-safeTail :: Text -> Text
-safeTail = safeOn Text.tail
 
 safeOn :: (Text -> Text) -> Text -> Text
 safeOn f s

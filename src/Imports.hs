@@ -4,9 +4,9 @@
 module Imports (module Import) where
 
 import Prelude as Import (Int)
-import Prelude as Import (id, flip, (.), ($), (==), (/=), curry, uncurry)
+import Prelude as Import (id, flip, (.), ($), (==), (/=), curry, uncurry, fst, snd)
 
-import Data.List as Import (length, map, head, zip, sort, groupBy)
+import Data.List as Import (length, (++), map, head, repeat, reverse, zip, sort, groupBy)
 import Data.Either as Import (Either(..))
 import Data.Functor as Import (fmap, (<$>))
 import Data.Maybe as Import (mapMaybe)

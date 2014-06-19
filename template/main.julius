@@ -50,10 +50,13 @@ jQuery(function () {
     $('.pkglist li').each(function () {
         var pname = this.id;
         $('div.btn', this).each(function () {
-            $(this).click(function () {
-                var action = $(this).data("do");
-                withPackage(pname, action);
-            });
+            var action = $(this).data("do");
+            if (action) {
+                $(this).click(function () {
+                    var action = $(this).data("do");
+                    withPackage(pname, action);
+                });
+            }
         });
     });
 
