@@ -16,7 +16,6 @@ body {
 #header {
     position: relative;
     background-color: #{head_color};
-    color: white;
     h1 {
         display: block;
         font-size: 1.6em;
@@ -24,6 +23,10 @@ body {
         margin: auto;
         padding: 0.4em 0;
         width: #{content_width};
+        a {
+            color: white;
+            text-decoration: none;
+        }
     }
 }
 

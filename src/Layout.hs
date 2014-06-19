@@ -13,7 +13,8 @@ import Data.Char (toLower)
 withContent :: Widget -> Widget
 withContent widget = [whamlet|
     <div #header>
-        <h1>Aptly Sustain
+        <h1>
+            <a href=@{HomeR}>Aptly Sustain
     <div #statusbar .affix-top .ok>
         <span .text>TEST TEXT please ignore
         <a ."close">Dismiss

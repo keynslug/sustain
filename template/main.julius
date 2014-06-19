@@ -15,6 +15,10 @@ jQuery(function () {
     //
     // View
 
+    var hideStatus = function () {
+        $('#statusbar').fadeOut();
+    }
+
     var emitStatus = function (cls, html) {
         var el = $('#statusbar');
         el.removeClass('ok failure').addClass(cls).fadeIn(200);
