@@ -30,7 +30,7 @@ instance Yesod Sustain where
         giveUrlRenderer $(hamletFile "template/layout.hamlet")
 
     addStaticContent =
-        addStaticContentExternal (Right . id) genFileName staticDir (StaticR . flip StaticRoute []) where
+        addStaticContentExternal minifym genFileName staticDir (StaticR . flip StaticRoute []) where
             genFileName = base64md5
 
 staticDir :: FilePath
