@@ -65,7 +65,7 @@ list sec = do
 
 listAll :: IO PackageList
 listAll = do
-    let ds = enumFrom (minBound :: Section)
+    let ds = enumFrom minBound
     fmap (concat . mapMaybe id) $ mapM Aptly.list ds
 
 constructArgs :: Action -> [String]
