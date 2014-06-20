@@ -16,7 +16,7 @@ withContent widget = [whamlet|
         <h1>Aptly Sustain
     <div #statusbar .affix-top .ok>
         <span .text>TEST TEXT please ignore
-        <a href="#" ."close">Dismiss
+        <a ."close">Dismiss
     <div #content>
         ^{widget}
         <div .clearfix>
@@ -32,10 +32,11 @@ packageList ps = do
             <div .navsidebar .affix-top>
                 <div .wrapper>
                     $forall ps <- groupedPs
-                        <a href="##{captionPackages ps}">
-                            <div .group>
-                                #{captionPackages ps}
-                                <i .number>#{length ps}
+                        $with c <- captionPackages ps
+                            <a href="##{c}">
+                                <div data-name="#{c}" .group>
+                                    #{c}
+                                    <i .number>#{length ps}
                 <div .clearfix>
         <div .c2>
             <div .pkglist>
@@ -52,18 +53,19 @@ packageSection ps =
         <h3 ##{caption}>#{caption}
         <ul>
             $forall p <- rps
-                <li ##{fullName p} .#{showSection $ section p}>
-                    $if section p == Testing
-                        <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" data-do="stabilize" title="Stabilize">
-                            <span ."glyphicon glyphicon-chevron-up">
-                    $else
-                        <div ."btn btn-tooltip btn-success" data-toggle="tooltip" data-placement="bottom" title="Stable">
-                            <span ."glyphicon glyphicon-ok">
-                    <div ."btn btn-tooltip btn-danger" data-toggle="tooltip" data-placement="bottom" data-do="remove" title="Remove">
-                        <span ."glyphicon glyphicon-remove">
-                    <span .name>#{name p}
-                    <span .version>#{version p}
-                    <span .platform>#{platform p}
+                $with s <- section p
+                    <li data-pkgname="#{fullName p}" data-name="#{name p}" data-section="#{show s}" .#{showSection s}>
+                        $if s == Testing
+                            <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" data-do="stabilize" title="Stabilize">
+                                <span ."glyphicon glyphicon-chevron-up">
+                        $else
+                            <div ."btn btn-tooltip btn-success" data-toggle="tooltip" data-placement="bottom" title="Stable">
+                                <span ."glyphicon glyphicon-ok">
+                        <div ."btn btn-tooltip btn-danger" data-toggle="tooltip" data-placement="bottom" data-do="remove" title="Remove">
+                            <span ."glyphicon glyphicon-remove">
+                        <span .name>#{name p}
+                        <span .version>#{version p}
+                        <span .platform>#{platform p}
     |]
 
 captionPackages :: PackageList -> Text

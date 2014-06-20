@@ -23,7 +23,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 
 data Section = Testing | Stable
-    deriving (Show, Enum, Eq, Ord)
+    deriving (Show, Read, Enum, Eq, Ord)
 
 type Version = Text
 type Platform = Text

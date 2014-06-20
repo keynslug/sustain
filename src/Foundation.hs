@@ -14,6 +14,7 @@ mkYesodData "Sustain" [parseRoutes|
     /                HomeR        GET
     /api/stabilize   StabilizeR   POST
     /api/remove      RemoveR      POST
+    /api/sync        SyncR        POST
 |]
 
 instance Yesod Sustain where

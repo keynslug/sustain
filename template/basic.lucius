@@ -34,10 +34,12 @@ body {
     position: absolute;
     z-index: 1;
     color: white;
+    display: none;
     a {
-        margin-left: 1em;
-        color: rgba(255, 255, 255, 0.7);
+        margin-left: 0.75em;
+        color: rgba(255, 255, 255, 0.8);
         text-decoration: underline;
+        cursor: pointer;
     }
     a:hover {
         color: white;
@@ -124,7 +126,7 @@ body {
     padding: 0;
     margin: 0.5em;
     li {
-        display: block;
+        overflow: hidden;
         padding: 0.25em;
         span {
             display: inline-block;
@@ -145,6 +147,12 @@ body {
                 top: 3px;
                 font-size: 16px;
             }
+        }
+    }
+    li.ephemeral {
+        font-style: italic;
+        div.btn {
+            opacity: 0.5;
         }
     }
     li.testing {

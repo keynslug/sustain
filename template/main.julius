@@ -1,5 +1,126 @@
 jQuery(function () {
 
+    //
+    // Network
+
+    var api = function (action, section, pkgname) {
+        return $.ajax("/api/" + action, {
+            type: "POST",
+            data: JSON.stringify({section: section, name: pkgname}),
+            contentType: "application/json",
+            dataType: "json"
+        });
+    };
+
+    //
+    // View
+
+    var emitStatus = function (cls, html) {
+        var el = $('#statusbar');
+        el.removeClass('ok failure').addClass(cls).fadeIn(200);
+        el.data('bs.affix').checkPosition();
+        return $('.text', el).html(html);
+    };
+
+    var emitOk = function () {
+        return emitStatus('ok', 'Everything went well.');
+    };
+
+    var emitFailure = function () {
+        return emitStatus('failure', 'Ouch, everything went bad.');
+    };
+
+    var suggestSync = function(el, section) {
+        var ask = $('<a>').text('Sure').click(function () {
+            act('sync', {section: section});
+        });
+        el.append(' Wanna sync <b>' + section + '</b>, buddy?').append(ask);
+    };
+
+    var suggestRefresh = function(el) {
+        var ask = $('<a>').text('Refresh').click(function () {
+            location.reload();
+        });
+        el.append(ask);
+    };
+
+    var findPackageEntry = function (pkg) {
+        return $('.pkglist li[data-pkgname="' + pkg.name + '"][data-section="' + pkg.section + '"]');
+    };
+
+    var markStable = function (pkg) {
+        var el = findPackageEntry(pkg),
+            height = el.height(),
+            entry = el.clone()
+                .removeClass('testing')
+                .addClass('stable ephemeral')
+                .insertBefore(el)
+                .data('section', 'Stable')
+                .attr('data-section', 'Stable')
+                .hide()
+                .slideDown(200);
+        $('div.tooltip', entry).remove();
+    };
+
+    var modifyPackageCounter = function (pkg, d) {
+        var counter = $('.navsidebar div[data-name="' + pkg.caption + '"] i'),
+            n = +counter.text();
+        counter.text((n + d).toString());
+    };
+
+    var removePackage = function (pkg) {
+        findPackageEntry(pkg).slideUp(200, function () { $(this).remove(); });
+    };
+
+    //
+    // Controllers
+
+    var act = function (action, pkg) {
+        return api(action, pkg.section, pkg.name)
+            .fail(emitFailure)
+            .done(function () {
+                var el = emitOk();
+                reactors[action](pkg, el);
+            });
+    };
+
+    var reactors = {
+        'stabilize': function (pkg, el) {
+            suggestSync(el, 'Stable');
+            modifyPackageCounter(pkg, +1);
+            markStable(pkg);
+        },
+        'remove': function (pkg, el) {
+            suggestSync(el, pkg.section);
+            modifyPackageCounter(pkg, -1);
+            removePackage(pkg);
+        },
+        'sync': function (section, el) {
+            suggestRefresh(el);
+        }
+    };
+
+    //
+    // Init sequence
+
+    $('.pkglist li').each(function () {
+        var p = {
+            name: $(this).data('pkgname'),
+            caption: $(this).data('name'),
+            section: $(this).data('section')
+        };
+        $('div.btn', this).each(function () {
+            var action = $(this).data("do");
+            if (reactors[action]) {
+                $(this).click(function () { act(action, p); });
+            }
+        });
+    });
+
+    $('#statusbar .close').click(function () {
+        $('#statusbar').fadeOut(200);
+    });
+
     // Activate tooltips
     $('.pkglist li div.btn').tooltip();
 
@@ -18,46 +139,6 @@ jQuery(function () {
                 return (this.top = $('#header').outerHeight() + $('.pkglist h3:first-child').innerHeight() - 8);
             }
         }
-    });
-
-    $('#statusbar .close').click(function () {
-        $('#statusbar').fadeOut(200);
-    });
-
-    var emitStatus = function (cls, html) {
-        var el = $('#statusbar');
-        el.removeClass('ok failure').addClass(cls).fadeIn(200);
-        el.data('bs.affix').checkPosition();
-        $('.text', el).html(html);
-    };
-
-    var withPackage = function (name, action) {
-        $.ajax("/api/" + action, {
-            type: "POST",
-            data: JSON.stringify({package_name: name}),
-            contentType: "application/json",
-            dataType: "json"
-        })
-            .done(function () {
-                emitStatus('ok', 'Everything went purely. Want to sync, buddy? <a href="/">Sure</a>');
-            })
-            .fail(function () {
-                emitStatus('failure', 'Everything went badly :(');
-            });
-    };
-
-    // Bind actions to buttons
-    $('.pkglist li').each(function () {
-        var pname = this.id;
-        $('div.btn', this).each(function () {
-            var action = $(this).data("do");
-            if (action) {
-                $(this).click(function () {
-                    var action = $(this).data("do");
-                    withPackage(pname, action);
-                });
-            }
-        });
     });
 
 });

@@ -2,11 +2,10 @@
 -- Aptly
 
 module Aptly (
-    Section(..),
     Action(..),
-    Result,
-    aptly,
-    aptlyList
+    Result(..),
+    run,
+    list
     ) where
 
 import Prelude
@@ -29,17 +28,17 @@ data Result =
     | Failure String
         deriving (Show)
 
-aptly :: Action -> IO Result
-aptly action = do
+run :: Action -> IO Result
+run action = do
     result <- readProcessWithExitCode aptlyExecutable (constructArgs action) mempty
     return $ fromResult result where
-        aptlyExecutable = "echo"
+        aptlyExecutable = "aptly"
         fromResult (ExitFailure code, _, errorString) = fromError code errorString
         fromResult (ExitSuccess, stdout, _) = parseResult stdout
 
-aptlyList :: Section -> IO (Maybe PackageList)
-aptlyList sec = do
-    result <- aptly (List sec)
+list :: Section -> IO (Maybe PackageList)
+list sec = do
+    result <- run (List sec)
     return $ case result of
         Success names -> Just $ mapMaybe ((fromSectionFullName sec) . pack) names
         Failure _ -> Nothing
