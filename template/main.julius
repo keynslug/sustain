@@ -30,8 +30,13 @@ jQuery(function () {
         return emitStatus('ok', 'Everything went well.');
     };
 
-    var emitFailure = function () {
-        return emitStatus('failure', 'Ouch, everything went bad.');
+    var emitFailure = function (reason) {
+        if (reason) {
+            return emitStatus('failure', 'Something went bad. ' + reason);
+        }
+        else {
+            return emitStatus('failure', 'Ouch, somehow everything went bad.');
+        }
     };
 
     var suggestSync = function(el, section) {
@@ -82,9 +87,14 @@ jQuery(function () {
     var act = function (action, pkg) {
         return api(action, pkg.section, pkg.name)
             .fail(emitFailure)
-            .done(function () {
-                var el = emitOk();
-                reactors[action](pkg, el);
+            .done(function (data) {
+                if ('ok' == data.status) {
+                    var el = emitOk();
+                    reactors[action](pkg, el);
+                }
+                else {
+                    emitFailure(data.reason);
+                }
             });
     };
 

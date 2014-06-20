@@ -6,12 +6,13 @@ module Imports (module Import) where
 import Prelude as Import (Int)
 import Prelude as Import (id, flip, (.), ($), (==), (/=), curry, uncurry, fst, snd)
 
-import Data.List as Import (length, (++), map, head, repeat, reverse, zip, sort, groupBy)
+import Data.List as Import (length, (++), map, head, concat, repeat, reverse, zip, sort, groupBy)
 import Data.Either as Import (Either(..))
 import Data.Functor as Import (fmap, (<$>))
-import Data.Maybe as Import (mapMaybe)
+import Data.Maybe as Import
 import Data.Function as Import (on)
-import Control.Monad as Import (mzero, mapM_)
+import Control.Applicative as Import ((<*>))
+import Control.Monad as Import (mzero, mapM, mapM_, return, (>>=), (=<<))
 
 import Yesod as Import
 import Text.Lucius as Import (luciusFile)

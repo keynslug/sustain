@@ -41,6 +41,7 @@ body {
     a {
         margin-left: 0.75em;
         color: rgba(255, 255, 255, 0.8);
+        font-style: italic;
         text-decoration: underline;
         cursor: pointer;
     }
@@ -75,6 +76,12 @@ body {
     padding: 0.5em;
     border-bottom: 1px solid #{line_color};
     color: #{header_color};
+}
+
+#content .c0 {
+    width: 60%;
+    margin: auto;
+    min-height: 1px;
 }
 
 #content .c1 {

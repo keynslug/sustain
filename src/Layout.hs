@@ -5,7 +5,6 @@ module Layout where
 import Imports
 import Foundation
 import Package
-import Aptly
 
 import Prelude (show)
 import Data.Char (toLower)
@@ -26,6 +25,12 @@ withContent widget = [whamlet|
 |]
 
 packageList :: PackageList -> Widget
+packageList [] = do
+    [whamlet|
+        <div .c0>
+            <div .pkglist>
+                <h3>Nothing to look at yet, buddy!
+    |]
 packageList ps = do
     let groupedPs = groupBy ((==) `on` name) $ sort ps
     [whamlet|
