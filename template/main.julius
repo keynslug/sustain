@@ -31,7 +31,7 @@ jQuery(function () {
     };
 
     var emitFailure = function (reason) {
-        if (reason) {
+        if (typeof reason === "String") {
             return emitStatus('failure', 'Something went bad. ' + reason);
         }
         else {
