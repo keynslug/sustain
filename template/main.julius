@@ -143,6 +143,20 @@ jQuery(function () {
 
     $('#statusbar .close').click(hideStatus);
 
+    var header = $('header');
+    var animateProgress = function () {
+        header.animate({'background-position-x': "+=160"}, 3000, 'linear', function () { animateProgress(); });
+    };
+
+    $(document).ajaxSend(function () {
+        header.stop().addClass('progress');
+        animateProgress();
+    });
+
+    $(document).ajaxComplete(function () {
+        header.stop().removeClass('progress');
+    });
+
     // Activate tooltips
     $('.pkglist li div.btn').tooltip();
 
