@@ -16,12 +16,12 @@ jQuery(function () {
     // View
 
     var hideStatus = function () {
-        $('#statusbar').fadeOut();
+        $('#statusbar').fadeOut(200);
     }
 
     var emitStatus = function (cls, html) {
         var el = $('#statusbar');
-        el.removeClass('ok failure').addClass(cls).fadeIn(200);
+        el.removeClass('ok failure approval').addClass(cls).fadeIn(200);
         el.data('bs.affix').checkPosition();
         return $('.text', el).html(html);
     };
@@ -31,13 +31,18 @@ jQuery(function () {
     };
 
     var emitFailure = function (reason) {
-        if (typeof reason === "String") {
+        if (typeof reason === "string") {
             return emitStatus('failure', 'Something went bad. ' + reason);
         }
         else {
             return emitStatus('failure', 'Ouch, somehow everything went bad.');
         }
     };
+
+    var getApproval = function (fn) {
+        var el = emitStatus('approval', 'Woah, are you truly sure?');
+        return $('<a>').text('Aye').appendTo(el).click(fn);
+    }
 
     var suggestSync = function(el, section) {
         var ask = $('<a>').text('Sure').click(function () {
@@ -123,17 +128,20 @@ jQuery(function () {
             caption: $(this).data('name'),
             section: $(this).data('section')
         };
-        $('div.btn', this).each(function () {
-            var action = $(this).data("do");
-            if (reactors[action]) {
-                $(this).click(function () { act(action, p); });
-            }
+        $('div.btn[data-do="stabilize"]', this).click(function () {
+            act('stabilize', p);
+        });
+        $('div.btn[data-do="remove"]', this).click(function () {
+            getApproval(function () { act('remove', p) });
         });
     });
 
-    $('#statusbar .close').click(function () {
-        $('#statusbar').fadeOut(200);
+    $('header a.sync').click(function () {
+        var section = $(this).data('section');
+        act('sync', {section: section});
     });
+
+    $('#statusbar .close').click(hideStatus);
 
     // Activate tooltips
     $('.pkglist li div.btn').tooltip();
@@ -142,7 +150,7 @@ jQuery(function () {
     $('#statusbar').affix({
         offset: {
             top: function () {
-                return (this.top = $('#header h1').outerHeight(true));
+                return (this.top = $('header h1').outerHeight(true));
             }
         }
     });
@@ -150,7 +158,7 @@ jQuery(function () {
     $('.navsidebar').affix({
         offset: {
             top: function () {
-                return (this.top = $('#header').outerHeight() + $('.pkglist h3:first-child').innerHeight() - 8);
+                return (this.top = $('header').outerHeight() + $('.pkglist h3:first-child').innerHeight() - 8);
             }
         }
     });

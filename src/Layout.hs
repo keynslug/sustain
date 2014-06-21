@@ -11,16 +11,18 @@ import Data.Char (toLower)
 
 withContent :: Widget -> Widget
 withContent widget = [whamlet|
-    <div #header>
+    <header>
         <h1>
             <a href=@{HomeR}>Aptly Sustain
+        <a ."sync" data-section="Testing">Sync Testing
+        <a ."sync" data-section="Stable">Sync Stable
     <div #statusbar .affix-top .ok>
         <span .text>TEST TEXT please ignore
         <a ."close">Dismiss
     <div #content>
         ^{widget}
         <div .clearfix>
-        <div #footer>
+        <footer>
             <p>© 2014 Platbox
 |]
 
