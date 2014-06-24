@@ -9,16 +9,33 @@ import Package
 import Prelude (show)
 import Data.Char (toLower)
 
+homeLayout :: Widget -> Handler Html
+homeLayout widget = do
+    mauth <- maybeAuthId
+    defaultLayout $ do
+        [whamlet|
+            <header>
+                <h1>
+                    <a href=@{HomeR}>Aptly Sustain
+                <a ."sync" data-section="Testing">Sync Testing
+                <a ."sync" data-section="Stable">Sync Stable
+                $maybe auth <- mauth
+                    <span ."login">
+                        <a href="@{AuthR LogoutR}">
+                            <span ."glyphicon glyphicon-log-out">
+                        #{auth}
+                $nothing
+                    <a ."login" href="@{AuthR LoginR}">
+                        <span ."glyphicon glyphicon-log-in">
+                        Log in
+            <div #statusbar .affix-top .ok>
+                <span .text>TEST TEXT please ignore
+                <a ."close">Dismiss
+        |]
+        widget
+
 withContent :: Widget -> Widget
 withContent widget = [whamlet|
-    <header>
-        <h1>
-            <a href=@{HomeR}>Aptly Sustain
-        <a ."sync" data-section="Testing">Sync Testing
-        <a ."sync" data-section="Stable">Sync Stable
-    <div #statusbar .affix-top .ok>
-        <span .text>TEST TEXT please ignore
-        <a ."close">Dismiss
     <div #content>
         ^{widget}
         <div .clearfix>

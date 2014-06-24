@@ -24,4 +24,4 @@
 
     <body>
         <div #wrapper role="main">
-          ^{pageBody pc}
+            ^{pageBody pc}

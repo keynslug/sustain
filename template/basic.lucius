@@ -25,22 +25,38 @@ a:hover {
 }
 
 header {
+    color: white;
     position: relative;
+    padding: 0 20%;
     background-color: #{head_color} !important;
+    > * {
+        float: left;
+        padding-top: 1.8em;
+        margin: 0;
+    }
     h1 {
-        display: inline-block;
         font-size: 1.6em;
         font-weight: normal;
-        margin: 0;
         padding: 0.75em;
-        padding-left: 20%;
         a {
             color: white;
         }
     }
-    a.sync {
+    .sync {
         margin-left: 1em;
     }
+    .login {
+        float: right;
+    }
+    .glyphicon {
+        margin: 0 0.5em;
+    }
+}
+
+header:after {
+    display: table;
+    content: " ";
+    clear: both;
 }
 
 header.progress {

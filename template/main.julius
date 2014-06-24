@@ -31,12 +31,13 @@ jQuery(function () {
     };
 
     var emitFailure = function (reason) {
+        if (typeof reason === "object" && reason.statusText) {
+            return emitStatus('failure', 'Something went bad: ' + reason.statusText);
+        }
         if (typeof reason === "string") {
             return emitStatus('failure', 'Something went bad. ' + reason);
         }
-        else {
-            return emitStatus('failure', 'Ouch, somehow everything went bad.');
-        }
+        return emitStatus('failure', 'Ouch, somehow everything went bad.');
     };
 
     var getApproval = function (fn) {
@@ -176,5 +177,12 @@ jQuery(function () {
             }
         }
     });
+
+    //
+    // Session message
+    var message = #{msg};
+    if (message.length) {
+        emitStatus('ok', message);
+    }
 
 });
