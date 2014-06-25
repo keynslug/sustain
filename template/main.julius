@@ -133,7 +133,7 @@ jQuery(function () {
             act('stabilize', p);
         });
         $('div.btn[data-do="remove"]', this).click(function () {
-            getApproval(function () { act('remove', p) });
+            getApproval(function () { act('remove', p); });
         });
     });
 
@@ -148,6 +148,8 @@ jQuery(function () {
     var animateProgress = function () {
         header.animate({'background-position-x': "+=160"}, 3000, 'linear', function () { animateProgress(); });
     };
+
+    header.data('animate', animateProgress);
 
     $(document).ajaxSend(function () {
         header.stop().addClass('progress');

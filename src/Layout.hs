@@ -20,8 +20,11 @@ page message contents = do
     contents
 
 authLayout :: Widget -> Widget
-authLayout widget =
-    toWidget $(luciusFile "template/auth.lucius") >> withHeader mempty >> widget
+authLayout widget = do
+    toWidget $(luciusFile "template/auth.lucius")
+    toWidget $(juliusFile "template/auth.julius")
+    withHeader mempty
+    widget
 
 homeLayout :: Maybe Text -> Widget -> Widget
 homeLayout mauth widget =

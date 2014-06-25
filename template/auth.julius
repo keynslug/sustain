@@ -1,0 +1,9 @@
+jQuery(function () {
+
+    var header = $('header');
+    $('#login form').on('submit', function () {
+        header.stop().addClass('progress');
+        header.data().animate();
+    });
+
+});
