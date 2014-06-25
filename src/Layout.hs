@@ -28,8 +28,9 @@ authLayout widget = do
 homeLayout :: Maybe Text -> Widget -> Widget
 homeLayout mauth widget =
     withHeader [whamlet|
-        <a ."sync" data-section="Testing">Sync Testing
-        <a ."sync" data-section="Stable">Sync Stable
+        <a ."do sync" data-section="Testing">Sync Testing
+        <a ."do sync" data-section="Stable">Sync Stable
+        <a ."do cleanup">Cleanup
         $maybe auth <- mauth
             <span ."login">
                 <a href="@{AuthR LogoutR}">

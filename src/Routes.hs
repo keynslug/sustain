@@ -31,4 +31,5 @@ mkYesodData "Sustain" [parseRoutes|
     /api/stabilize   StabilizeR   POST
     /api/remove      RemoveR      POST
     /api/sync        SyncR        POST
+    /api/cleanup     CleanupR     POST
 |]

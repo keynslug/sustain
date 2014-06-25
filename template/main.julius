@@ -117,6 +117,8 @@ jQuery(function () {
         },
         'sync': function (section, el) {
             suggestRefresh(el);
+        },
+        'cleanup': function () {
         }
     };
 
@@ -140,6 +142,10 @@ jQuery(function () {
     $('header a.sync').click(function () {
         var section = $(this).data('section');
         act('sync', {section: section});
+    });
+
+    $('header a.cleanup').click(function () {
+        act('cleanup', {});
     });
 
     $('#statusbar .close').click(hideStatus);

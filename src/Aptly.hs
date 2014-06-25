@@ -24,6 +24,7 @@ data Action =
     | Copy Section Package
     | Remove Package
     | Sync Section
+    | Cleanup
 
 data Result =
     Success [String]
@@ -74,6 +75,7 @@ constructArgs = construct where
     construct (Copy to p) = ["repo", "copy", showSection $ section p, showSection to, packageName p]
     construct (Remove p) = ["repo", "remove", showSection $ section p, packageName p]
     construct (Sync sec) = ["publish", "update", showSection sec]
+    construct Cleanup = ["db", "cleanup"]
     packageName = unpack . fullName
     showSection = map toLower . show
 

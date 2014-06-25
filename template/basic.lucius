@@ -42,7 +42,7 @@ header {
             color: white;
         }
     }
-    .sync {
+    .do {
         margin-left: 1em;
     }
     .login {

@@ -62,6 +62,11 @@ postSyncR = do
         Json.Error _ ->invalidArgs []
         Json.Success sec -> returnJson =<< (liftIO $ Aptly.run (Sync sec))
 
+postCleanupR :: Handler Value
+postCleanupR = do
+    _ <- requireJsonBody :: Handler Value
+    liftIO $ Aptly.run Cleanup >>= returnJson
+
 --
 -- Main
 
