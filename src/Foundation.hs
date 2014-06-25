@@ -1,27 +1,20 @@
 -- Foundation
 
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Foundation where
 
 import Imports
-import Yesod.Static
-import Yesod.Default.Util (addStaticContentExternal)
-import Yesod.Auth.LDAP
+import Routes
+import Layout as Layout
+
 import LDAP (LDAPScope(..), LDAPEntry(..))
-import Network.HTTP.Conduit (Manager, conduitManagerSettings, newManager)
 import Data.Text.Lazy (toStrict)
 import Text.Jasmine (minifym)
 import Text.Blaze.Renderer.Text (renderMarkup)
-
-data Sustain = Sustain { getStatic :: Static, httpManager :: Manager }
-
-mkYesodData "Sustain" [parseRoutes|
-    /static          StaticR      Static getStatic
-    /auth            AuthR        Auth getAuth
-    /                HomeR        GET
-    /api/stabilize   StabilizeR   POST
-    /api/remove      RemoveR      POST
-    /api/sync        SyncR        POST
-|]
+import Yesod.Auth.LDAP
+import Yesod.Default.Util (addStaticContentExternal)
+import Network.HTTP.Conduit (conduitManagerSettings, newManager)
 
 --
 -- Core type
@@ -30,14 +23,8 @@ instance Yesod Sustain where
 
     defaultLayout contents = do
         mmsg <- getMessage
-        let msg = String $ maybe mempty (toStrict . renderMarkup) mmsg
-        pc <- widgetToPageContent $ do
-            addStylesheet (StaticR $ StaticRoute ["css", "bootstrap.css"] [])
-            addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
-            addScript (StaticR $ StaticRoute ["js", "bootstrap.js"] [])
-            toWidget $(luciusFile "template/basic.lucius")
-            toWidget $(juliusFile "template/main.julius")
-            contents
+        let msg = maybe mempty (toStrict . renderMarkup) mmsg
+        pc <- widgetToPageContent $ Layout.page msg contents
         giveUrlRenderer $(hamletFile "template/layout.hamlet")
 
     addStaticContent =
@@ -71,6 +58,8 @@ instance YesodAuth Sustain where
     loginDest _ = HomeR
     logoutDest _ = HomeR
 
+    authLayout = defaultLayout . Layout.authLayout
+
     authPlugins _ = [ genericAuthLDAP LDAPConfig {
         usernameModifier = id,
         nameToDN = \n -> "uid=" ++ unpack n ++ "," ++ baseDomain,
@@ -95,10 +84,18 @@ getCommonName (LDAPEntry _ attrs) =
         _      -> Nothing
 
 --
+-- Layouts
+
+homeLayout :: Widget -> Handler Html
+homeLayout contents = do
+    mauth <- maybeAuthId
+    defaultLayout $ Layout.homeLayout mauth contents
+
+--
 -- Foundation
 
 makeFoundation :: IO Sustain
-makeFoundation = 
+makeFoundation =
     Sustain <$>
         static staticDir <*>
         newManager conduitManagerSettings

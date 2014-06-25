@@ -4,6 +4,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 import Imports
+import Routes
 import Foundation
 import Package
 import qualified Layout
@@ -38,7 +39,7 @@ instance ToJSON Result where
 -- Resources
 
 getHomeR :: Handler Html
-getHomeR = Layout.homeLayout $ do
+getHomeR = homeLayout $ do
     pkgs <- liftIO Aptly.listAll
     Layout.withContent $ Layout.packageList pkgs
 

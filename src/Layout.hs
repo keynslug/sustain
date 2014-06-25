@@ -3,36 +3,53 @@
 module Layout where
 
 import Imports
-import Foundation
+import Routes
 import Package
 
 import Prelude (show)
 import Data.Char (toLower)
 
-homeLayout :: Widget -> Handler Html
-homeLayout widget = do
-    mauth <- maybeAuthId
-    defaultLayout $ do
-        [whamlet|
-            <header>
-                <h1>
-                    <a href=@{HomeR}>Aptly Sustain
-                <a ."sync" data-section="Testing">Sync Testing
-                <a ."sync" data-section="Stable">Sync Stable
-                $maybe auth <- mauth
-                    <span ."login">
-                        <a href="@{AuthR LogoutR}">
-                            <span ."glyphicon glyphicon-log-out">
-                        #{auth}
-                $nothing
-                    <a ."login" href="@{AuthR LoginR}">
-                        <span ."glyphicon glyphicon-log-in">
-                        Log in
-            <div #statusbar .affix-top .ok>
-                <span .text>TEST TEXT please ignore
-                <a ."close">Dismiss
-        |]
-        widget
+page :: Text -> Widget -> Widget
+page message contents = do
+    let msg = String message
+    addStylesheet (StaticR $ StaticRoute ["css", "bootstrap.css"] [])
+    addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+    addScript (StaticR $ StaticRoute ["js", "bootstrap.js"] [])
+    toWidget $(luciusFile "template/basic.lucius")
+    toWidget $(juliusFile "template/main.julius")
+    contents
+
+authLayout :: Widget -> Widget
+authLayout widget = withHeader mempty >> widget
+
+homeLayout :: Maybe Text -> Widget -> Widget
+homeLayout mauth widget = do
+    withHeader [whamlet|
+        <a ."sync" data-section="Testing">Sync Testing
+        <a ."sync" data-section="Stable">Sync Stable
+        $maybe auth <- mauth
+            <span ."login">
+                <a href="@{AuthR LogoutR}">
+                    <span ."glyphicon glyphicon-log-out">
+                #{auth}
+        $nothing
+            <a ."login" href="@{AuthR LoginR}">
+                <span ."glyphicon glyphicon-log-in">
+                Log in
+    |]
+    widget
+
+withHeader :: Widget -> Widget
+withHeader headings =
+    [whamlet|
+        <header>
+            <h1>
+                <a href=@{HomeR}>Aptly Sustain
+            ^{headings}
+        <div #statusbar .affix-top .ok>
+            <span .text>TEST TEXT please ignore
+            <a ."close">Dismiss
+    |]
 
 withContent :: Widget -> Widget
 withContent widget = [whamlet|

@@ -13,10 +13,11 @@ import Data.Maybe as Import
 import Data.Monoid as Import
 import Data.Function as Import (on)
 import Control.Applicative as Import ((<*>))
-import Control.Monad as Import (mzero, mapM, mapM_, return, (>>=), (=<<))
+import Control.Monad as Import (mzero, mapM, mapM_, return, (>>), (>>=), (=<<))
 
 import Yesod as Import
 import Yesod.Auth as Import
+import Yesod.Static as Import
 import Text.Lucius as Import (luciusFile)
 import Text.Julius as Import (juliusFile)
 import Text.Cassius as Import (cassiusFile)
