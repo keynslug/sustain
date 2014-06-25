@@ -44,11 +44,11 @@ data LDAPConfig = LDAPConfig {
  , initPass :: String -- Password for initDN
  , baseDN :: Maybe String -- Base DN for user search, if any
  , ldapScope :: LDAPScope
- }  
+ }
 
 
 genericAuthLDAP :: YesodAuth m => LDAPConfig -> AuthPlugin m
-genericAuthLDAP config = AuthPlugin "LDAP" dispatch $ \tm -> toWidget 
+genericAuthLDAP config = AuthPlugin "LDAP" dispatch $ \tm -> toWidget
     [hamlet|
     <div id="header">
          <h1>Login
@@ -110,12 +110,11 @@ postLoginR config = do
                                        (initPass config)
                                        (baseDN config)
                                        (ldapScope config)
-                                       
-                                       
+
           case result of
             Ok ldapEntries -> do
                  let creds = Creds
-                       { credsIdent  = identifierModifier config u ldapEntries 
+                       { credsIdent  = identifierModifier config u ldapEntries
                        , credsPlugin = "LDAP"
                        , credsExtra  = []
                        }
