@@ -9,7 +9,6 @@ import Routes
 import Layout as Layout
 
 import Prelude (Char, String, fromIntegral)
-import LDAP (LDAPScope(..), LDAPEntry(..))
 import Data.Text.Lazy (toStrict)
 import Text.Jasmine (minifym)
 import Text.Blaze.Renderer.Text (renderMarkup)
@@ -60,6 +59,9 @@ instance YesodAuth Sustain where
     logoutDest _ = HomeR
 
     authLayout = defaultLayout . Layout.authLayout
+    authHttpManager = httpManager
+
+    maybeAuthId = lookupSession "_ID"
 
     authPlugins master = [ genericAuthLDAP LDAPConfig {
         usernameModifier = id,
@@ -78,10 +80,6 @@ instance YesodAuth Sustain where
             baseDomain = zip (repeat "dc") domainFragments
             searchDomain = ("cn", "users") : baseDomain
             s = settings master
-
-    authHttpManager = httpManager
-
-    maybeAuthId = lookupSession "_ID"
 
 splitOn :: Char -> String -> [String]
 splitOn c s = case dropWhile (== c) s of

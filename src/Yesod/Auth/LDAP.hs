@@ -13,7 +13,9 @@
 
 module Yesod.Auth.LDAP
    ( genericAuthLDAP
-   , LDAPConfig (..)) where
+   , LDAPConfig (..)
+   , LDAPScope (..)
+   , LDAPEntry (..)) where
 
 import Prelude
 import Yesod.Core (lift) 
