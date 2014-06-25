@@ -6,7 +6,10 @@ module Imports (module Import) where
 import Prelude as Import (Int, Bool(..))
 import Prelude as Import (id, const, flip, (.), ($), (==), (/=), curry, uncurry, fst, snd)
 
-import Data.List as Import (length, (++), map, head, concat, repeat, reverse, zip, sort, groupBy, dropWhile)
+import Data.List as Import (
+    length, (++), map, head, tail, concat, concatMap, repeat, reverse, zip, sort,
+    break, groupBy, dropWhile
+    )
 import Data.Either as Import (Either(..))
 import Data.Functor as Import (fmap, (<$>))
 import Data.Maybe as Import

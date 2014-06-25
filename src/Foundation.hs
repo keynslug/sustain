@@ -8,6 +8,7 @@ import Imports
 import Routes
 import Layout as Layout
 
+import Prelude (Char, String, fromIntegral)
 import LDAP (LDAPScope(..), LDAPEntry(..))
 import Data.Text.Lazy (toStrict)
 import Text.Jasmine (minifym)
@@ -28,7 +29,7 @@ instance Yesod Sustain where
         giveUrlRenderer $(hamletFile "template/layout.hamlet")
 
     addStaticContent =
-        addStaticContentExternal (Right . id) genFileName staticDir (StaticR . flip StaticRoute []) where
+        addStaticContentExternal minifym genFileName staticDir (StaticR . flip StaticRoute []) where
             genFileName = base64md5
 
     authRoute _ = Just $ AuthR LoginR
@@ -60,22 +61,42 @@ instance YesodAuth Sustain where
 
     authLayout = defaultLayout . Layout.authLayout
 
-    authPlugins _ = [ genericAuthLDAP LDAPConfig {
+    authPlugins master = [ genericAuthLDAP LDAPConfig {
         usernameModifier = id,
-        nameToDN = \n -> "uid=" ++ unpack n ++ "," ++ baseDomain,
-        identifierModifier = \n (e:_) -> maybe n id $ getCommonName e,
-        ldapHost = "keynfawkes.org",
-        ldapPort' = 389,
-        initDN = "cn=admin,dc=keynfawkes,dc=org",
-        initPass = "lowman",
-        baseDN = Just baseDomain,
+        nameToDN = qualify . unpack,
+        identifierModifier = getIndentifier,
+        ldapHost = authHost s,
+        ldapPort' = fromIntegral $ authPort s,
+        initDN = qualify $ bindUser s,
+        initPass = bindPassword s,
+        baseDN = Just $ fromFragments searchDomain,
         ldapScope = LdapScopeSubtree
         } ] where
-            baseDomain = "ou=people,dc=keynfawkes,dc=org"
+            qualify n = mappend n ('@':domain)
+            domain = ldapDomain s
+            domainFragments = splitOn '.' domain
+            baseDomain = zip (repeat "dc") domainFragments
+            searchDomain = ("cn", "users") : baseDomain
+            s = settings master
 
     authHttpManager = httpManager
 
     maybeAuthId = lookupSession "_ID"
+
+splitOn :: Char -> String -> [String]
+splitOn c s = case dropWhile (== c) s of
+    "" -> []
+    s' -> w : splitOn c rest
+        where (w, rest) = break (== c) s'
+
+fromFragments :: [(String, String)] -> String
+fromFragments [] = ""
+fromFragments fs = tail $ concatMap ((',' :) . join) fs where
+    join (n, v) = n ++ "=" ++ v
+
+getIndentifier :: Text -> [LDAPEntry] -> Text
+getIndentifier n (e:_) = maybe n id $ getCommonName e
+getIndentifier n _     = n
 
 getCommonName :: LDAPEntry -> Maybe Text
 getCommonName (LDAPEntry _ attrs) =
@@ -98,4 +119,9 @@ makeFoundation :: IO Sustain
 makeFoundation =
     Sustain <$>
         static staticDir <*>
-        newManager conduitManagerSettings
+        newManager conduitManagerSettings <*>
+        return (Settings
+            "int.platbox.com"
+            "localhost" 10389
+            "test111" "Qweasd123"
+            )
