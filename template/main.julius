@@ -182,7 +182,11 @@ jQuery(function () {
     // Session message
     var message = #{msg};
     if (message.length) {
-        emitStatus('ok', message);
+        var stat = 'ok';
+        if (message.indexOf('Error') === 0) {
+            stat = 'failure';
+        }
+        emitStatus(stat, message);
     }
 
 });
