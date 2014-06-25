@@ -39,7 +39,7 @@ instance ToJSON Result where
 -- Resources
 
 getHomeR :: Handler Html
-getHomeR = homeLayout $ do
+getHomeR = withHomeLayout $ do
     pkgs <- liftIO Aptly.listAll
     Layout.withContent $ Layout.packageList pkgs
 

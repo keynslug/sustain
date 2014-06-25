@@ -23,7 +23,7 @@ authLayout :: Widget -> Widget
 authLayout widget = withHeader mempty >> widget
 
 homeLayout :: Maybe Text -> Widget -> Widget
-homeLayout mauth widget = do
+homeLayout mauth widget =
     withHeader [whamlet|
         <a ."sync" data-section="Testing">Sync Testing
         <a ."sync" data-section="Stable">Sync Stable
@@ -36,8 +36,7 @@ homeLayout mauth widget = do
             <a ."login" href="@{AuthR LoginR}">
                 <span ."glyphicon glyphicon-log-in">
                 Log in
-    |]
-    widget
+    |] >> widget
 
 withHeader :: Widget -> Widget
 withHeader headings =

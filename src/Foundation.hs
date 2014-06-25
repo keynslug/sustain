@@ -56,9 +56,9 @@ instance YesodAuth Sustain where
     getAuthId = return . Just . credsIdent
 
     loginDest _ = HomeR
-    logoutDest _ = HomeR
+    logoutDest _ = AuthR LoginR
 
-    authLayout = defaultLayout . Layout.authLayout
+    authLayout = withAuthLayout
     authHttpManager = httpManager
 
     maybeAuthId = lookupSession "_ID"
@@ -105,10 +105,18 @@ getCommonName (LDAPEntry _ attrs) =
 --
 -- Layouts
 
-homeLayout :: Widget -> Handler Html
-homeLayout contents = do
+withHomeLayout :: Widget -> Handler Html
+withHomeLayout contents = do
     mauth <- maybeAuthId
     defaultLayout $ Layout.homeLayout mauth contents
+
+withAuthLayout :: Widget -> Handler Html
+withAuthLayout contents = do
+    mauth <- maybeAuthId
+    maybe
+        (defaultLayout $ Layout.authLayout contents)
+        (const $ redirect HomeR)
+        mauth
 
 --
 -- Foundation
