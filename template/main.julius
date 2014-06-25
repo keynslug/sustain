@@ -149,16 +149,26 @@ jQuery(function () {
         header.animate({'background-position-x': "+=160"}, 3000, 'linear', function () { animateProgress(); });
     };
 
-    header.data('animate', animateProgress);
+    var preloadImage = function (url) {
+        var i = new Image();
+        i.src = url;
+        return i;
+    };
 
-    $(document).ajaxSend(function () {
+    preloadImage('/static/pr.png');
+
+    var startProgressAnimation = function () {
         header.stop().addClass('progress');
         animateProgress();
-    });
+    };
 
-    $(document).ajaxComplete(function () {
+    var stopProgressAnimation = function () {
         header.stop().removeClass('progress');
-    });
+    };
+
+    $('form').on('submit', startProgressAnimation);
+    $(document).ajaxSend(startProgressAnimation);
+    $(document).ajaxComplete(stopProgressAnimation);
 
     // Activate tooltips
     $('.pkglist li div.btn').tooltip();

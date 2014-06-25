@@ -22,7 +22,6 @@ page message contents = do
 authLayout :: Widget -> Widget
 authLayout widget = do
     toWidget $(luciusFile "template/auth.lucius")
-    toWidget $(juliusFile "template/auth.julius")
     withHeader mempty
     widget
 
