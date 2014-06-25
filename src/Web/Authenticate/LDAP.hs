@@ -49,8 +49,8 @@ loginLDAP user userDN pass ldapHost ldapPort' initDN initPassword searchDN ldapS
        entry <- ldapSearch ldapOBJ
                            searchDN
                            ldapScope
-                           -- (Just ("sAMAccountName=" ++ (unpack user)))
-                           (Just ("uid=" ++ (unpack user)))
+                           (Just ("sAMAccountName=" ++ (unpack user)))
+                           --(Just ("uid=" ++ (unpack user)))
                            LDAPAllUserAttrs
                            False
 -- FIXME y u no make new function for nested case statement?       
