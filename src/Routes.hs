@@ -3,20 +3,8 @@
 module Routes where
 
 import Imports
-import Prelude (String)
+import Settings
 import Network.HTTP.Conduit (Manager)
-
-data Settings = Settings {
-    ldapDomain :: String,
-    authHost :: String,
-    authPort :: Int,
-    bindUser :: String,
-    bindPassword :: String
-    }
-
-genericSettings :: String -> String -> String -> Settings
-genericSettings domain user password =
-    Settings domain domain 389 user password
 
 data Sustain = Sustain {
     getStatic :: Static,

@@ -5,6 +5,7 @@
 module Foundation where
 
 import Imports
+import Settings
 import Routes
 import Layout as Layout
 
@@ -67,25 +68,17 @@ instance YesodAuth Sustain where
         usernameModifier = id,
         nameToDN = qualify . unpack,
         identifierModifier = getIndentifier,
-        ldapHost = authHost s,
-        ldapPort' = fromIntegral $ authPort s,
+        ldapUri = authUri s,
         initDN = qualify $ bindUser s,
         initPass = bindPassword s,
         baseDN = Just $ fromFragments searchDomain,
         ldapScope = LdapScopeSubtree
         } ] where
-            qualify n = mappend n ('@':domain)
-            domain = ldapDomain s
-            domainFragments = splitOn '.' domain
+            qualify n = mappend n ('@' : ldapDomain s)
+            domainFragments = ldapDomainFrags s
             baseDomain = zip (repeat "dc") domainFragments
             searchDomain = ("cn", "users") : baseDomain
             s = settings master
-
-splitOn :: Char -> String -> [String]
-splitOn c s = case dropWhile (== c) s of
-    "" -> []
-    s' -> w : splitOn c rest
-        where (w, rest) = break (== c) s'
 
 fromFragments :: [(String, String)] -> String
 fromFragments [] = ""
@@ -122,12 +115,7 @@ withAuthLayout contents = do
 -- Foundation
 
 makeFoundation :: IO Sustain
-makeFoundation =
-    Sustain <$>
-        static staticDir <*>
-        newManager conduitManagerSettings <*>
-        return (Settings
-            "int.platbox.com"
-            "localhost" 10389
-            "test111" "Qweasd123"
-            )
+makeFoundation = Sustain
+    <$> static staticDir
+    <*> newManager conduitManagerSettings
+    <*> readSettings "config.yaml"
