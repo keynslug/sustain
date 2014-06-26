@@ -114,8 +114,8 @@ withAuthLayout contents = do
 --
 -- Foundation
 
-makeFoundation :: IO Sustain
-makeFoundation = Sustain
+makeFoundation :: Settings -> IO Sustain
+makeFoundation s = Sustain
     <$> static staticDir
     <*> newManager conduitManagerSettings
-    <*> readSettings "config.yaml"
+    <*> return s

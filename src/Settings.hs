@@ -6,19 +6,18 @@ module Settings where
 import Prelude
 import Control.Monad (mzero)
 import Control.Applicative ((<$>), (<*>))
+import Data.Text (Text)
 import Data.Yaml
 
 data Settings = Settings {
+    host :: Text,
+    port :: Int,
     authUri :: String,
     ldapDomain :: String,
     ldapDomainFrags :: [String],
     bindUser :: String,
     bindPassword :: String
     } deriving (Show, Read, Eq)
-
-genericSettings :: String -> String -> String -> Settings
-genericSettings dom user password =
-    Settings (uriFromDomain False dom) dom (splitDomain dom) user password
 
 uriFromDomain :: Bool -> String -> String
 uriFromDomain sec dom = prefix sec ++ dom ++ "/" where
@@ -38,7 +37,9 @@ fromValue = parseMaybe parser where
         dom <- o .: "ldapDomain"
         uri <- o .:? "ldapUri" .!= (uriFromDomain False dom)
         Settings
-            <$> return uri
+            <$> o .:? "host" .!= ""
+            <*> o .: "port"
+            <*> return uri
             <*> return dom
             <*> return (splitDomain dom)
             <*> o .: "bindUser"

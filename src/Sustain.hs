@@ -5,6 +5,7 @@
 
 import Imports
 import Routes
+import Settings
 import Foundation
 import Package
 import qualified Layout
@@ -70,7 +71,11 @@ postCleanupR = do
 --
 -- Main
 
+data Environment = Default
+    deriving (Show)
+
 main :: IO ()
 main = do
-    app <- makeFoundation
-    warp 3000 app
+    s <- readSettings "config.yaml"
+    app <- makeFoundation s
+    warp (port s) app
