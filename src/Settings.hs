@@ -16,7 +16,8 @@ data Settings = Settings {
     ldapDomain :: String,
     ldapDomainFrags :: [String],
     bindUser :: String,
-    bindPassword :: String
+    bindPassword :: String,
+    privilegedUsers :: [Text]
     } deriving (Show, Read, Eq)
 
 uriFromDomain :: Bool -> String -> String
@@ -44,6 +45,7 @@ fromValue = parseMaybe parser where
             <*> return (splitDomain dom)
             <*> o .: "bindUser"
             <*> o .: "bindPassword"
+            <*> o .:? "privileged" .!= []
     parser _ = mzero
 
 readSettings :: FilePath -> IO Settings
