@@ -35,21 +35,10 @@ run :: Action -> IO Result
 run action = do
     let args = constructArgs action
     result <- readProcessWithExitCode aptlyExecutable args mempty
-    logCmdline (aptlyExecutable : args)
-    logResult result
     return $ fromResult result where
         aptlyExecutable = "aptly"
         fromResult (ExitFailure code, stdout, _) = fromError code $ lines stdout
         fromResult (ExitSuccess, stdout, _) = parseResult action $ lines stdout
-
-logCmdline :: [String] -> IO ()
-logCmdline = logOutput ">" . unwords
-
-logResult :: (ExitCode, String, String) -> IO ()
-logResult (_, stdout, stderr) = logOutput "!" stderr >> logOutput "-" stdout
-
-logOutput :: String -> String -> IO ()
-logOutput c = mapM_ putStrLn . map (\s -> " " ++ c ++ " " ++ s) . lines
 
 list :: Section -> IO (Maybe PackageList)
 list sec = do
