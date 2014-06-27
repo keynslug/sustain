@@ -26,17 +26,17 @@ authLayout widget = do
     withHeader mempty
     widget
 
-homeLayout :: Maybe Text -> Widget -> Widget
+homeLayout :: Maybe AuthParams -> Widget -> Widget
 homeLayout mauth widget =
     withHeader [whamlet|
         <a ."do sync" data-section="Testing">Sync Testing
         <a ."do sync" data-section="Stable">Sync Stable
         <a ."do cleanup">Cleanup
-        $maybe auth <- mauth
+        $maybe (_, username) <- mauth
             <span ."login">
                 <a href="@{AuthR LogoutR}">
                     <span ."glyphicon glyphicon-log-out">
-                #{auth}
+                #{username}
         $nothing
             <a ."login" href="@{AuthR LoginR}">
                 <span ."glyphicon glyphicon-log-in">

@@ -12,6 +12,8 @@ data Sustain = Sustain {
     settings :: Settings
     }
 
+type AuthParams = (Text, Text)
+
 mkYesodData "Sustain" [parseRoutes|
     /static          StaticR      Static getStatic
     /auth            AuthR        Auth getAuth

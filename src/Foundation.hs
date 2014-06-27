@@ -10,6 +10,7 @@ import Routes
 import Layout as Layout
 
 import Prelude (Char, String, fromIntegral)
+import Data.Text (breakOn, stripPrefix)
 import Data.Text.Lazy (toStrict)
 import Text.Jasmine (minifym)
 import Text.Blaze.Renderer.Text (renderMarkup)
@@ -36,11 +37,15 @@ instance Yesod Sustain where
 
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized _ False     = return Authorized
-    isAuthorized _ True      = do
+    isAuthorized _ True = do
+        s <- settings <$> getYesod
         mu <- maybeAuthId
         return $ case mu of
             Nothing -> AuthenticationRequired
-            Just _ -> Authorized
+            Just (uid, _) ->
+                if elem uid $ privilegedUsers s
+                    then Authorized
+                    else AuthenticationRequired
 
 staticDir :: FilePath
 staticDir = "static"
@@ -51,10 +56,16 @@ instance RenderMessage Sustain FormMessage where
 --
 -- Auth
 
+instance PathPiece AuthParams where
+    toPathPiece (uid, uname) = mconcat [uid, "::", uname]
+    fromPathPiece s =
+        let (uid, uname) = breakOn "::" s in
+            (,) uid <$> stripPrefix "::" uname
+
 instance YesodAuth Sustain where
 
-    type AuthId Sustain = Text
-    getAuthId = return . Just . credsIdent
+    type AuthId Sustain = AuthParams
+    getAuthId cs = return $ let uid = credsIdent cs in Just (uid, getUserName uid cs)
 
     loginDest _ = HomeR
     logoutDest _ = AuthR LoginR
@@ -62,12 +73,14 @@ instance YesodAuth Sustain where
     authLayout = withAuthLayout
     authHttpManager = httpManager
 
-    maybeAuthId = lookupSession "_ID"
+    maybeAuthId = do
+        auth <- lookupSession "_ID"
+        return $ maybe Nothing fromPathPiece auth
 
     authPlugins master = [ genericAuthLDAP LDAPConfig {
         usernameModifier = id,
         nameToDN = qualify . unpack,
-        identifierModifier = getIndentifier,
+        identifierModifier = const,
         ldapUri = authUri s,
         initDN = qualify $ bindUser s,
         initPass = bindPassword s,
@@ -85,15 +98,12 @@ fromFragments [] = ""
 fromFragments fs = tail $ concatMap ((',' :) . join) fs where
     join (n, v) = n ++ "=" ++ v
 
-getIndentifier :: Text -> [LDAPEntry] -> Text
-getIndentifier n (e:_) = maybe n id $ getCommonName e
-getIndentifier n _     = n
-
-getCommonName :: LDAPEntry -> Maybe Text
-getCommonName (LDAPEntry _ attrs) =
-    case map snd $ dropWhile ((/= "cn") . fst) attrs of
-        (ns:_) -> Just $ pack $ head ns
-        _      -> Nothing
+getUserName :: (Yesod m) => Text -> Creds m -> Text
+getUserName uid e = maybe uid id $ getCommonName $ credsExtra e where
+    getCommonName [] = Nothing
+    getCommonName ((n, v) : attrs)
+        | n == "cn" = Just v
+        | otherwise = getCommonName attrs
 
 --
 -- Layouts

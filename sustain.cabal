@@ -24,6 +24,8 @@ Executable sustain
               GADTs
               GeneralizedNewtypeDeriving
               FlexibleContexts
+              FlexibleInstances
+              TypeSynonymInstances
               EmptyDataDecls
               NoMonomorphismRestriction
               DeriveDataTypeable
