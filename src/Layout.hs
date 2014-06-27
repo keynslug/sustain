@@ -12,6 +12,7 @@ import Data.Char (toLower)
 page :: Text -> Widget -> Widget
 page message contents = do
     let msg = String message
+    setTitle "Aptly Sustain"
     addStylesheet (StaticR $ StaticRoute ["css", "bootstrap.css"] [])
     addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
     addScript (StaticR $ StaticRoute ["js", "bootstrap.js"] [])
