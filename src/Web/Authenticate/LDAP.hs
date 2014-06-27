@@ -17,7 +17,7 @@ import LDAP
 import Control.Exception
 import Control.Monad.IO.Class ()
   
-data LDAPAuthResult = Ok [LDAPEntry]
+data LDAPAuthResult = Ok LDAPEntry
                     | NoSuchUser
                     | WrongPassword
                     | InitialBindFail
@@ -57,7 +57,7 @@ loginLDAP user userDN pass ldapUri initDN initPassword searchDN ldapScope =
                              ldapOBJ' <- ldapInitialize ldapUri
                              userBindResult <- try (ldapSimpleBind ldapOBJ' userDN pass) :: IO (Either LDAPException ())
                              case userBindResult of
-                               Right _ -> return $ Ok entry -- Successful user bind
+                               Right _ -> return $ Ok (head entry) -- Successful user bind
                                Left _ -> return WrongPassword
          _               -> return NoSuchUser
      Left _ ->

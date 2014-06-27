@@ -110,11 +110,12 @@ postLoginR config = do
                                        (ldapScope config)
 
           case result of
-            Ok ldapEntries -> do
+            Ok ldapEntry -> do
                  let creds = Creds
-                       { credsIdent  = identifierModifier config u ldapEntries
+                       { credsIdent  = u
                        , credsPlugin = "LDAP"
-                       , credsExtra  = []
+                       , credsExtra  = let LDAPEntry _ attrs = ldapEntry in
+                            map (\(n, vs) -> (pack n, pack $ unlines vs)) attrs
                        }
                  lift $ setCreds True creds
             ldapError -> errorMessage (pack $ show ldapError)
