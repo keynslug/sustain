@@ -53,3 +53,4 @@ Executable sustain
                , aeson                         >= 0.6        && < 0.8
                , yaml                          >= 0.8        && < 1.0
                , conduit                       >= 1.0        && < 2.0
+               , daemons                       >= 0.2

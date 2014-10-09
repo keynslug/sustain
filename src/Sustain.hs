@@ -17,6 +17,8 @@ import Data.String ()
 import Data.Aeson (withText, withObject)
 import qualified Data.Aeson.Types as Json (Result(..), parse)
 
+import System.Posix.Daemon
+
 mkYesodDispatch "Sustain" resourcesSustain
 
 instance ToJSON Section where
@@ -75,7 +77,10 @@ data Environment = Default
     deriving (Show)
 
 main :: IO ()
-main = do
+main = runDetached (Just "sustain.pid") (ToFile "log/sustain.log") server
+
+server :: IO ()
+server = do
     s <- readSettings "config.yaml"
     app <- makeFoundation s
     warp (port s) app
