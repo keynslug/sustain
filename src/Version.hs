@@ -24,13 +24,14 @@ unhunk (VersionHunk v) = v
 instance Ord VersionHunk where
     compare = comparing (
         map (
+            foldl (\a d -> d + a * 10) 0 .
             map order .
-            unpack .
-            dropWhile (== '0')) .
+            unpack) .
         groupBy (\a b -> isDigit a && isDigit b) .
         unhunk) where
             order c
-                | isAlphaNum c = ord c
+                | isDigit c = ord c - ord '0'
+                | isAlpha c = ord c
                 | c == '~' = -1
                 | c == chr 0 = 0
                 | otherwise = 256 + ord c
