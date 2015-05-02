@@ -22,19 +22,24 @@ unhunk :: VersionHunk -> Text
 unhunk (VersionHunk v) = v
 
 instance Ord VersionHunk where
-    compare = comparing (
+    compare = compareHunk `on` unhunk where
+        compareHunk t1 t2
+            | t1 == t2  = EQ
+            | otherwise = if (hunkRank t1) > (hunkRank t2) then GT else LT
+
+hunkRank :: Text -> [Int]
+hunkRank h =
         map (
-            foldl (\a d -> d + a * 10) 0 .
+            foldl (\a d -> d + a * 256) 0 .
             map order .
-            unpack) .
-        groupBy (\a b -> isDigit a && isDigit b) .
-        unhunk) where
+            unpack)
+        (groupBy (\a b -> isAlphaNum a && isAlphaNum b) h)
+        ++ repeat 0 where
             order c
                 | isDigit c = ord c - ord '0'
                 | isAlpha c = ord c
                 | c == '~' = -1
-                | c == chr 0 = 0
-                | otherwise = 256 + ord c
+                | otherwise = 128 + ord c
 
 data Version = Version {
     epoch :: VersionHunk,
