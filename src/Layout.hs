@@ -83,6 +83,7 @@ packageList ps = do
                                 <div data-name="#{c}" .group>
                                     #{c}
                                     <i .number>#{length ps}
+                <div .underscan>
                 <div .clearfix>
         <div .c2>
             <div .pkglist>
