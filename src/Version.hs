@@ -6,35 +6,35 @@ module Version (Version, VersionHunk, fromText) where
 import Prelude hiding (null, init, tail, length, dropWhile)
 
 import Data.Char
+import Data.Function (on)
 import Data.Ord (comparing)
 import Data.Monoid
 import Data.Text (Text, null, empty, unpack, init, tail, breakOn, breakOnEnd, dropWhile, groupBy)
 
 import Control.Monad.State
 
-newtype VersionHunk = VersionHunk Text
+newtype VersionHunk = VersionHunk [Int]
     deriving (Eq, Show)
 
 vhunk :: Text -> VersionHunk
-vhunk = VersionHunk
+vhunk = VersionHunk . hunkRank
 
-unhunk :: VersionHunk -> Text
+unhunk :: VersionHunk -> [Int]
 unhunk (VersionHunk v) = v
 
 instance Ord VersionHunk where
     compare = compareHunk `on` unhunk where
         compareHunk t1 t2
             | t1 == t2  = EQ
-            | otherwise = if (hunkRank t1) > (hunkRank t2) then GT else LT
+            | otherwise = if (t1 ++ repeat 0) > (t2 ++ repeat 0) then GT else LT
 
 hunkRank :: Text -> [Int]
-hunkRank h =
+hunkRank =
         map (
             foldl (\a d -> d + a * 256) 0 .
             map order .
-            unpack)
-        (groupBy (\a b -> isAlphaNum a && isAlphaNum b) h)
-        ++ repeat 0 where
+            unpack) .
+        groupBy (\a b -> isAlphaNum a && isAlphaNum b) where
             order c
                 | isDigit c = ord c - ord '0'
                 | isAlpha c = ord c
@@ -49,7 +49,7 @@ data Version = Version {
 
 fromText :: Text -> Version
 fromText t = execState (parseEpoch t >>= parseRevision >>= parsePrimary) $
-    Version v0 v0 v0 where v0 = VersionHunk empty
+    Version v0 v0 v0 where v0 = VersionHunk []
 
 parseEpoch :: Text -> State Version Text
 parseEpoch t = do

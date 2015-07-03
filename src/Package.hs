@@ -28,6 +28,7 @@ data Package = Package {
     fullName :: Text,
     name :: Text,
     version :: Text,
+    rank :: Version,
     platform :: Text
     } deriving (Eq, Show)
 
@@ -35,7 +36,7 @@ instance Ord Package where
     compare p1 p2 =
         comparing name p1 p2 <>
         comparing section p1 p2 <>
-        comparing (fromText . version) p1 p2 <>
+        comparing rank p1 p2 <>
         comparing platform p1 p2
 
 type PackageList = [Package]
@@ -43,5 +44,5 @@ type PackageList = [Package]
 fromSectionFullName :: Section -> Text -> Maybe Package
 fromSectionFullName sec s =
     case split (== '_') s of
-        [n, v, p] -> Just $ Package sec s n v p
+        [n, v, p] -> Just $ Package sec s n v (fromText v) p
         _ -> Nothing
