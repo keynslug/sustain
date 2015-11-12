@@ -1,0 +1,10 @@
+resolver: lts-3.11
+flags: {}
+extra-deps:
+ - LDAP-0.6.10
+packages:
+ - '.'
+ - location: deps/authenticate-ldap
+   extra-dep: true
+ - location: deps/yesod-auth-ldap
+   extra-dep: true

@@ -1,0 +1,196 @@
+jQuery(function () {
+
+    //
+    // Network
+
+    var api = function (action, section, pkgname) {
+        return $.ajax("/api/" + action, {
+            type: "POST",
+            data: JSON.stringify({section: section, name: pkgname}),
+            contentType: "application/json",
+            dataType: "json"
+        });
+    };
+
+    //
+    // View
+
+    var hideStatus = function () {
+        $('#statusbar').fadeOut(200);
+    }
+
+    var emitStatus = function (cls, html) {
+        var el = $('#statusbar');
+        el.removeClass('ok failure approval').addClass(cls).fadeIn(200);
+        return $('.text', el).html(html);
+    };
+
+    var emitOk = function () {
+        return emitStatus('ok', 'Everything went well.');
+    };
+
+    var emitFailure = function (reason) {
+        if (typeof reason === "object" && reason.statusText) {
+            return emitStatus('failure', 'Something went bad: ' + reason.statusText);
+        }
+        if (typeof reason === "string") {
+            return emitStatus('failure', 'Something went bad. ' + reason);
+        }
+        return emitStatus('failure', 'Ouch, somehow everything went bad.');
+    };
+
+    var getApproval = function (fn) {
+        var el = emitStatus('approval', 'Woah, are you truly sure?');
+        return $('<a>').text('Aye').appendTo(el).click(fn);
+    }
+
+    var suggestSync = function(el, section) {
+        var ask = $('<a>').text('Sure').click(function () {
+            act('sync', {section: section});
+        });
+        el.append(' Wanna sync <b>' + section + '</b>, buddy?').append(ask);
+    };
+
+    var suggestRefresh = function(el) {
+        var ask = $('<a>').text('Refresh').click(function () {
+            location.reload();
+        });
+        el.append(ask);
+    };
+
+    var findPackageEntry = function (pkg) {
+        return $('.pkglist li[data-pkgname="' + pkg.name + '"][data-section="' + pkg.section + '"]');
+    };
+
+    var markStable = function (pkg) {
+        var el = findPackageEntry(pkg),
+            height = el.height(),
+            entry = el.clone()
+                .removeClass('testing')
+                .addClass('stable ephemeral')
+                .insertBefore(el)
+                .data('section', 'Stable')
+                .attr('data-section', 'Stable')
+                .hide()
+                .slideDown(200);
+        $('div.tooltip', entry).remove();
+    };
+
+    var modifyPackageCounter = function (pkg, d) {
+        var counter = $('.navsidebar div[data-name="' + pkg.caption + '"] i'),
+            n = +counter.text();
+        counter.text((n + d).toString());
+    };
+
+    var removePackage = function (pkg) {
+        findPackageEntry(pkg).slideUp(200, function () { $(this).remove(); });
+    };
+
+    //
+    // Controllers
+
+    var act = function (action, pkg) {
+        return api(action, pkg.section, pkg.name)
+            .fail(emitFailure)
+            .done(function (data) {
+                if ('ok' == data.status) {
+                    var el = emitOk();
+                    reactors[action](pkg, el);
+                }
+                else {
+                    emitFailure(data.reason);
+                }
+            });
+    };
+
+    var reactors = {
+        'stabilize': function (pkg, el) {
+            suggestSync(el, 'Stable');
+            modifyPackageCounter(pkg, +1);
+            markStable(pkg);
+        },
+        'remove': function (pkg, el) {
+            suggestSync(el, pkg.section);
+            modifyPackageCounter(pkg, -1);
+            removePackage(pkg);
+        },
+        'sync': function (section, el) {
+            suggestRefresh(el);
+        },
+        'cleanup': function () {
+        }
+    };
+
+    //
+    // Init sequence
+
+    $('.pkglist li').each(function () {
+        var p = {
+            name: $(this).data('pkgname'),
+            caption: $(this).data('name'),
+            section: $(this).data('section')
+        };
+        $('div.btn[data-do="stabilize"]', this).click(function () {
+            act('stabilize', p);
+        });
+        $('div.btn[data-do="remove"]', this).click(function () {
+            getApproval(function () { act('remove', p); });
+        });
+    });
+
+    $('header a.sync').click(function () {
+        var section = $(this).data('section');
+        act('sync', {section: section});
+    });
+
+    $('header a.cleanup').click(function () {
+        act('cleanup', {});
+    });
+
+    $('#statusbar .close').click(hideStatus);
+
+    var header = $('header');
+    var animateProgress = function () {
+        header.animate({'background-position-x': "+=160"}, 3000, 'linear', function () { animateProgress(); });
+    };
+
+    var preloadImage = function (url) {
+        var i = new Image();
+        i.src = url;
+        return i;
+    };
+
+    preloadImage('/static/pr.png');
+
+    var startProgressAnimation = function () {
+        header.stop().addClass('progress');
+        animateProgress();
+    };
+
+    var stopProgressAnimation = function () {
+        header.stop().removeClass('progress');
+    };
+
+    $('form').on('submit', startProgressAnimation);
+    $(document).ajaxSend(startProgressAnimation);
+    $(document).ajaxComplete(stopProgressAnimation);
+
+    // Activate tooltips
+    $('.pkglist li div.btn').tooltip();
+
+    $('.navsidebar .wrapper').height(
+        $(window).height() * 0.7
+    );
+
+    //
+    // Session message
+    var message = #{msg};
+    if (message.length) {
+        var stat = 'ok';
+        if (message.indexOf('Error') === 0) {
+            stat = 'failure';
+        }
+        emitStatus(stat, message);
+    }
+
+});

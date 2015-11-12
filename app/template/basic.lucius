@@ -1,0 +1,229 @@
+@head_color: #D44A98;
+@header_color: #202020;
+@line_color: #C0C0C0;
+@light_tint: #FFEAFA;
+@content_width: 60%;
+
+body {
+    font-size: 16px;
+    font-family: sans-serif;
+}
+
+.clearfix {
+    clear: both;
+}
+
+a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+header {
+    color: white;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+    top: 0;
+    background-color: #{head_color} !important;
+    .heading {
+        padding: 0 20%;
+        > * {
+            float: left;
+            padding-top: 1.8em;
+            margin: 0;
+        }
+        h1 {
+            font-size: 1.6em;
+            font-weight: normal;
+            padding: 0.75em;
+            a {
+                color: white;
+            }
+        }
+        .do {
+            margin-left: 1em;
+        }
+        .login {
+            float: right;
+        }
+        .glyphicon {
+            margin: 0 0.5em;
+        }
+    }
+    .heading:after {
+        display: table;
+        content: " ";
+        clear: both;
+    }
+}
+
+header.progress {
+    background: url(/static/pr.png) repeat;
+    background-repeat: repeat-x;
+    background-position-y: 100%;
+}
+
+#statusbar {
+    width: 100%;
+    padding: 0.1em 0.25em 0.25em 20%;
+    border-top: 0.25em solid black;
+    position: relative;
+    color: white;
+    display: none;
+    a {
+        margin-left: 1em;
+        border-bottom: 1px dotted;
+    }
+}
+
+#statusbar.ok {
+    border-color: #1AA428;
+    background-color: #3AC448;
+}
+
+#statusbar.failure {
+    border-color: #B42A3A;
+    background-color: #D43A4A;
+}
+
+#statusbar.approval {
+    border-color: #3980AB;
+    background-color: #3CADD8;
+}
+
+#content {
+    margin: auto;
+    position: relative;
+    padding-top: 3.6em;
+    h3 {
+        font-size: 1.2em;
+        margin: -3em 0 1em;
+        padding: 4.6em 0.5em 0.5em;
+        border-bottom: 1px solid #{line_color};
+        color: #{header_color};
+    }
+    div {
+        min-height: 1px;
+    }
+    .c0 {
+        width: 60%;
+        margin: auto;
+    }
+    .c1 {
+        width: 30%;
+        float: left;
+    }
+    .c2 {
+        width: 60%;
+        float: left;
+    }
+    .navsidebar {
+        margin-top: 1px;
+        border-top: 1px solid #{line_color};
+        div.wrapper {
+            margin: 0.5em;
+            padding-bottom: 1.2em;
+            overflow-y: scroll;
+            height: 400px;
+            a {
+                div.group {
+                    font-size: 0.8em;
+                    color: #606060;
+                    padding: 0.5em;
+                    i.number {
+                        float: right;
+                    }
+                }
+                div.group:hover {
+                    background-color: #{light_tint};
+                }
+            }
+        }
+        div.underscan {
+            width: 100%;
+            height: 2em;
+            position: relative;
+            top: -2em;
+            background: linear-gradient(to top, rgba(255, 255, 255, 255) 20%, rgba(255, 255, 255, 0) 100%);
+        }
+    }
+    .navsidebar.affix-top {
+        position: relative;
+        top: 4.2em;
+        width: 60%;
+        left: 24%;
+    }
+    .navsidebar.affix {
+        position: fixed;
+        top: 7.8em;
+        width: 18%;
+        left: 7.2%;
+    }
+}
+
+#content ul {
+    padding: 0;
+    margin: 0.5em;
+    li {
+        overflow: hidden;
+        padding: 0.25em;
+        margin-bottom: 0.25em;
+        span {
+            display: inline-block;
+            vertical-align: baseline;
+        }
+        span.name {
+            margin-left: 0.5em;
+            width: 40%;
+        }
+        span.version {
+            width: 40%;
+        }
+        div.btn {
+            visibility: hidden;
+            padding: 4px 6px;
+            border-radius: 0;
+            span {
+                top: 3px;
+                font-size: 16px;
+            }
+        }
+    }
+    li.ephemeral {
+        font-style: italic;
+        div.btn {
+            opacity: 0.5;
+        }
+    }
+    li.testing {
+        color: #777;
+        font-style: italic;
+        background: url(/static/b.png) repeat;
+    }
+    li:hover {
+        background-color: #{light_tint};
+        div.btn {
+            visibility: visible;
+        }
+    }
+}
+
+footer {
+    width: 60%;
+    margin: auto;
+    padding: 0.5em;
+    margin-top: 4em;
+    border-top: 1px solid #E0E0E0;
+    p {
+        margin: 0;
+        padding: 0.5em;
+        font-size: 0.8em;
+        color: #{line_color};
+    }
+}
