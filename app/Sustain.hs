@@ -16,8 +16,6 @@ import Data.String ()
 import qualified Data.Aeson as Json
 import qualified Data.Aeson.Types as Json
 
-import System.Posix.Daemonize (CreateDaemon(..), serviced, simpleDaemon)
-
 mkYesodDispatch "Sustain" resourcesSustain
 
 instance ToJSON Aptly.Result where
@@ -62,7 +60,7 @@ data Environment = Default
     deriving (Show)
 
 main :: IO ()
-main = serviced $ simpleDaemon { program = const server }
+main = server
 
 server :: IO ()
 server = do
