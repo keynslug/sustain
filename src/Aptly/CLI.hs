@@ -11,7 +11,6 @@ module Aptly.CLI (
 
 import Prelude
 import Package
-import Data.Monoid
 import Data.List (isPrefixOf, dropWhileEnd)
 import Data.Maybe (mapMaybe)
 import Data.Char (toLower, isSpace)

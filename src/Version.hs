@@ -7,9 +7,7 @@ import Prelude hiding (null, init, tail, length, dropWhile)
 
 import Data.Char
 import Data.Function (on)
-import Data.Ord (comparing)
-import Data.Monoid
-import Data.Text (Text, null, empty, unpack, init, tail, breakOn, breakOnEnd, dropWhile, groupBy)
+import Data.Text (Text, null, unpack, init, tail, breakOn, breakOnEnd, groupBy)
 
 import Control.Monad.State
 
