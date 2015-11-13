@@ -17,14 +17,18 @@ library
                      , Package
                      , Version
   default-extensions:  OverloadedStrings
+                     , ScopedTypeVariables
   build-depends:       base >= 4.7 && < 5
                      , text
+                     , bytestring
                      , transformers
                      , mtl
                      , monad-control
                      , process
                      , lens
+                     , http-client
                      , wreq
+                     , aeson
   default-language:    Haskell2010
 
 executable sustain-exe

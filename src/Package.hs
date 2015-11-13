@@ -10,6 +10,7 @@ module Package (
     section,
     identifier,
     fileName,
+    ref,
     name,
     version,
     platform
@@ -18,8 +19,11 @@ module Package (
 import Prelude
 
 import Data.Ord (comparing)
+import Data.Maybe (fromJust)
 import Data.Monoid
-import Data.Text (Text, split, uncons, intercalate)
+import Data.Text (Text, pack, unpack, split, uncons, intercalate)
+import Data.Aeson
+import Control.Monad (mzero)
 import Version
 
 data Section = Testing | Stable
@@ -46,6 +50,28 @@ instance Ord Package where
 
 type PackageList = [Package]
 
+instance ToJSON Section where
+    toJSON = String . pack . show
+
+instance FromJSON Section where
+    parseJSON = withText "Section" $ \t -> return (read $ unpack t)
+
+instance ToJSON PackageID where
+    toJSON (Filename fn) = String fn
+    toJSON (PackageKey key) = object [ "key" .= key ]
+
+instance FromJSON PackageID where
+    parseJSON (Object o) = PackageKey <$> o .: "key"
+    parseJSON (String fn) = Filename <$> return fn
+    parseJSON _ = mzero
+
+instance ToJSON Package where
+    toJSON p = object [ "id" .= identifier p, "section" .= section p ]
+
+instance FromJSON Package where
+    parseJSON (Object o) = fromJust <$> (fromSectionPackageID <$> o .: "section" <*> o .: "id")
+    parseJSON _ = mzero
+
 fromSectionPackageID :: Section -> PackageID -> Maybe Package
 fromSectionPackageID sec ident = from ident $ builder sec ident where
     from (Filename fn) = fromFileName fn
@@ -53,6 +79,11 @@ fromSectionPackageID sec ident = from ident $ builder sec ident where
 
 fileName :: Package -> Text
 fileName p = intercalate "_" $ map ($ p) [name, version, platform]
+
+ref :: Package -> Text
+ref = extract . identifier where
+    extract (Filename fn) = fn
+    extract (PackageKey key) = key
 
 type PackageBuilder = Text -> Text -> Text -> Package
 
@@ -68,6 +99,6 @@ fromFileName fn build =
 fromKey :: Text -> PackageBuilder -> Maybe Package
 fromKey key build = do
     (what, text) <- uncons key
-    case split (== ' ') text of
-        [p, n, v, _] -> Just $ build p n v
+    case (what, split (== ' ') text) of
+        ('P', [p, n, v, _]) -> Just $ build p n v
         _ -> Nothing
