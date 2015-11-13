@@ -30,8 +30,8 @@ header {
     width: 100%;
     z-index: 1;
     top: 0;
-    background-color: #{head_color} !important;
     .heading {
+        background-color: #{head_color} !important;
         padding: 0 20%;
         > * {
             float: left;
