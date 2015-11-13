@@ -9,67 +9,51 @@ import Settings
 import Foundation
 import Package
 import qualified Layout
-import Aptly.CLI (Action(..), Result(..))
-import Aptly.CLI (run)
-import Aptly.HttpAPI (listAll)
+import qualified Aptly.HttpAPI as Aptly
 
-import Prelude (Show, show, read)
+import Prelude (Show)
 import Data.String ()
-import Data.Aeson (withText, withObject)
-import qualified Data.Aeson.Types as Json (Result(..), parse)
+import qualified Data.Aeson as Json
+import qualified Data.Aeson.Types as Json
 
 import System.Posix.Daemonize (CreateDaemon(..), serviced, simpleDaemon)
 
 mkYesodDispatch "Sustain" resourcesSustain
 
-instance ToJSON Section where
-    toJSON = String . pack . show
-
-instance FromJSON Section where
-    parseJSON = withText "Section" $ \t -> return (read $ unpack t)
-
-instance ToJSON Package where
-    toJSON p = object [ "name" .= fileName p, "section" .= section p ]
-
-instance FromJSON Package where
-    parseJSON (Object o) = fmap fromJust $ fromSectionPackageID <$> o .: "section" <*> (Filename <$> o .: "name")
-    parseJSON _ = mzero
-
-instance ToJSON Result where
-    toJSON (Success _) = object [ "status" .= ("ok" :: Text) ]
-    toJSON (Failure r) = object [ "status" .= ("error" :: Text), "reason" .= pack r ]
+instance ToJSON Aptly.Result where
+    toJSON Aptly.Success = object [ "status" .= ("ok" :: Text) ]
+    toJSON (Aptly.Failure r) = object [ "status" .= ("error" :: Text), "reason" .= r ]
 
 --
 -- Resources
 
 getHomeR :: Handler Html
 getHomeR = withHomeLayout $ do
-    pkgs <- liftIO listAll
+    pkgs <- liftIO Aptly.listAll
     Layout.withContent $ Layout.packageList pkgs
 
-withPackage :: (Package -> Action) -> Handler Result
+withPackage :: (Package -> IO Aptly.Result) -> Handler Aptly.Result
 withPackage action = do
     pkg <- requireJsonBody :: Handler Package
-    liftIO $ run (action pkg)
+    liftIO $ action pkg
 
 postStabilizeR :: Handler Value
-postStabilizeR = withPackage (Copy Stable) >>= returnJson
+postStabilizeR = withPackage (Aptly.copy Stable) >>= returnJson
 
 postRemoveR :: Handler Value
-postRemoveR = withPackage Remove >>= returnJson
+postRemoveR = withPackage Aptly.delete >>= returnJson
 
 postSyncR :: Handler Value
 postSyncR = do
     json <- requireJsonBody
-    let parser = withObject "Section" (\o -> o .: "section" >>= parseJSON)
+    let parser = Json.withObject "Section" (\o -> o .: "section" >>= parseJSON)
     case Json.parse parser json :: Json.Result Section of
         Json.Error _ -> invalidArgs []
-        Json.Success sec -> returnJson =<< (liftIO $ run (Sync sec))
+        Json.Success sec -> returnJson =<< (liftIO $ Aptly.sync sec)
 
 postCleanupR :: Handler Value
 postCleanupR = do
-    _ <- requireJsonBody :: Handler Value
-    liftIO $ run Cleanup >>= returnJson
+    notFound
 
 --
 -- Main
@@ -78,8 +62,7 @@ data Environment = Default
     deriving (Show)
 
 main :: IO ()
---main = serviced $ simpleDaemon { program = const server }
-main = server
+main = serviced $ simpleDaemon { program = const server }
 
 server :: IO ()
 server = do

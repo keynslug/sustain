@@ -8,6 +8,8 @@ import Package
 
 import Prelude (show)
 import Data.Char (toLower)
+import Data.Aeson (encode)
+import Data.Text.Lazy.Encoding (decodeUtf8)
 
 page :: Text -> Widget -> Widget
 page message contents = do
@@ -97,12 +99,13 @@ packageSection ps =
         caption = captionPackages ps
         showSection = map toLower . show
         rps = reverse ps
+        ident = decodeUtf8 . encode . identifier
     in [whamlet|
         <h3 ##{caption}>#{caption}
         <ul>
             $forall p <- rps
                 $with s <- section p
-                    <li data-pkgname="#{fileName p}" data-name="#{name p}" data-section="#{show s}" .#{showSection s}>
+                    <li data-pkgid="#{ident p}" data-ref="#{ref p}" data-name="#{name p}" data-section="#{show s}" .#{showSection s}>
                         $if s == Testing
                             <div ."btn btn-tooltip btn-primary" data-toggle="tooltip" data-placement="bottom" data-do="stabilize" title="Stabilize">
                                 <span ."glyphicon glyphicon-chevron-up">

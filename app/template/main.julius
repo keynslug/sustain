@@ -3,10 +3,10 @@ jQuery(function () {
     //
     // Network
 
-    var api = function (action, section, pkgname) {
+    var api = function (action, section, pkgid) {
         return $.ajax("/api/" + action, {
             type: "POST",
-            data: JSON.stringify({section: section, name: pkgname}),
+            data: JSON.stringify({section: section, id: pkgid}),
             contentType: "application/json",
             dataType: "json"
         });
@@ -59,7 +59,7 @@ jQuery(function () {
     };
 
     var findPackageEntry = function (pkg) {
-        return $('.pkglist li[data-pkgname="' + pkg.name + '"][data-section="' + pkg.section + '"]');
+        return $('.pkglist li[data-ref="' + pkg.ref + '"][data-section="' + pkg.section + '"]');
     };
 
     var markStable = function (pkg) {
@@ -90,7 +90,7 @@ jQuery(function () {
     // Controllers
 
     var act = function (action, pkg) {
-        return api(action, pkg.section, pkg.name)
+        return api(action, pkg.section, pkg.id)
             .fail(emitFailure)
             .done(function (data) {
                 if ('ok' == data.status) {
@@ -126,7 +126,8 @@ jQuery(function () {
 
     $('.pkglist li').each(function () {
         var p = {
-            name: $(this).data('pkgname'),
+            id: $(this).data('pkgid'),
+            ref: $(this).data('ref'),
             caption: $(this).data('name'),
             section: $(this).data('section')
         };
