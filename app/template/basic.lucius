@@ -56,17 +56,16 @@ header {
             margin: 0 0.5em;
         }
     }
+    .heading.progress {
+        background: url(/static/pr.png) repeat;
+        background-repeat: repeat-x;
+        background-position: 0% 100%;
+    }
     .heading:after {
         display: table;
         content: " ";
         clear: both;
     }
-}
-
-header.progress {
-    background: url(/static/pr.png) repeat;
-    background-repeat: repeat-x;
-    background-position-y: 100%;
 }
 
 #statusbar {

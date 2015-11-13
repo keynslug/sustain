@@ -150,7 +150,7 @@ jQuery(function () {
 
     $('#statusbar .close').click(hideStatus);
 
-    var header = $('header');
+    var header = $('header .heading');
     var animateProgress = function () {
         header.animate({'background-position-x': "+=160"}, 3000, 'linear', function () { animateProgress(); });
     };
