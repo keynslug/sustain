@@ -8,3 +8,5 @@ packages:
    extra-dep: true
  - location: deps/yesod-auth-ldap
    extra-dep: true
+ - location: deps/wreq
+   extra-dep: true
